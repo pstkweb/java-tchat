@@ -35,7 +35,7 @@ public class CientStub {
 		
 		try {
 			System.out.println("Waiting for server response");
-			if (Protocol.OK.toString().equals(read.readLine())) {
+			if (Protocol.CONNECT_OK.toString().equals(read.readLine())) {
 				return true;
 			}
 		} catch (IOException e) {
@@ -83,7 +83,7 @@ public class CientStub {
 			System.out.println(msg);
 			
 			switch (Protocol.createProtocol(msg)) {
-				case MAJ_USERS_LIST:
+				case USERS_LIST:
 					ArrayList<String> users = new ArrayList<String>();
 					String token = read.readLine();
 
