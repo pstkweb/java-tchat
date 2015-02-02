@@ -4,12 +4,13 @@ public enum Protocol {
 	CONNECT("connexion"),
 	OK("ok"),
 	KO("ko"),
-	USERS_LIST("liste"),
-	MAJ_USERS_LIST("majListe"),
-	SEND_MP("envoiMP"),
-	RECEIVE_MP("receptionMP"),
-	SEND_MSG("envoiMSG"),
-	RECEIVE_MSG("receptionMSG");
+	USERS_LIST("listUsers"),
+	NEW_USER("addUser"),
+	USER_LEAVE("removeUser"),
+	SEND_MP("sendMP"),
+	RECEIVE_MP("receiveMP"),
+	SEND_MSG("sendMSG"),
+	RECEIVE_MSG("receiveMSG");
 	
 	private String name;
 	
