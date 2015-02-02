@@ -1,4 +1,4 @@
-package fr.pastekweb.client;
+package fr.pastekweb.tchat.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.pastekweb.server.Protocol;
+import fr.pastekweb.tchat.server.Protocol;
 
 /**
  * The default Client class
@@ -86,22 +86,36 @@ public class DefaultClient implements IClient
 	@Override
 	public boolean connect(String pseudo)
 	{
+		System.out.println("Send: "+Protocol.CONNECT);
+		System.out.println("Pseudo: <"+pseudo+">");
 		send(Protocol.CONNECT);
+		this.pseudo = pseudo;
 		send(pseudo);
-		try {
-			if (reader.readLine().equals(Protocol.CONNECT_OK)) {
-				return true;
+		
+		synchronized (this) {
+			try {
+				System.out.println("Waiting for server");
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			System.out.println("Stream reading error: "+e.getMessage());
 		}
-		return false;
+		return connected;
+	}
+	
+	@Override
+	public boolean isConnected() 
+	{
+		return connected;
 	}
 
 	@Override
 	public void askClientsList()
 	{
+		System.out.println("Send: "+Protocol.USERS_LIST);
 		send(Protocol.USERS_LIST);
+		
+		System.out.println("Waiting for server");
 	}
 	
 	/**
@@ -110,12 +124,20 @@ public class DefaultClient implements IClient
 	 */
 	private boolean receiveClientList()
 	{
+		System.out.println("User list");
 		try {
 			String token = reader.readLine();
+			System.out.println("Token: "+token);
 			String pseudo;
-			while ((pseudo = reader.readLine()) != token) {
+			
+			System.out.println("Add client :");
+			while (!(pseudo = reader.readLine()).equals(token)) {
+				System.out.println("- "+pseudo);
 				addClient(pseudo);
 			}
+			System.out.println("Token end: "+pseudo);
+			
+			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
 		}
@@ -191,10 +213,38 @@ public class DefaultClient implements IClient
 		send(message);
 	}
 	
+	/**
+	 * Receives a private message
+	 * @return boolean whether the message have been well received
+	 */
 	private boolean receivePrivateMessage()
 	{
 		try {
+			String from = reader.readLine();
 			String message = reader.readLine();
+			
+			System.out.println("Private message from "+from+": "+message);
+			// TODO: handle the reception
+			
+			return true;
+		} catch (IOException e) {
+			System.out.println("Stream reading error: "+e.getMessage());
+		}
+		return false;
+	}
+	
+	/**
+	 * Receives a private message
+	 * @return boolean whether the message have been well received
+	 */
+	private boolean receivePublicMessage()
+	{
+		try {
+			String from = reader.readLine();
+			String message = reader.readLine();
+			
+			System.out.println("Public message from "+from+": "+message);
+			// TODO: handle the reception
 			
 			return true;
 		} catch (IOException e) {
@@ -229,12 +279,19 @@ public class DefaultClient implements IClient
 		while (isAlive) {
 			try {
 				String message = reader.readLine();
+				System.out.println("----------------------------");
+				System.out.println("msg: "+message);
+				System.out.println("proto: "+Protocol.createProtocol(message));
 				switch (Protocol.createProtocol(message)) {
 					case CONNECT_OK:
 						connected = true;
+						// TODO: remove log
+						System.out.println("Logged in as: "+pseudo);
+						synchronized (this) { notify(); }
 						break;
 					case CONNECT_KO:
 						connected = false;
+						synchronized (this) { notify(); }
 						break;
 					case USERS_LIST:
 						receiveClientList();
@@ -248,7 +305,7 @@ public class DefaultClient implements IClient
 						receivePrivateMessage();
 						break;
 					case RECEIVE_MSG:
-						// TODO receive public message
+						receivePublicMessage();
 						break;
 					default:
 						break;

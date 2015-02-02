@@ -1,4 +1,4 @@
-package fr.pastekweb.client;
+package fr.pastekweb.tchat.client;
 
 import java.util.List;
 
@@ -19,10 +19,22 @@ public interface IClient extends Runnable
 	public boolean connect(String pseudo);
 	
 	/**
+	 * Whether the user is connected
+	 * @return boolean whether the user is connected.
+	 */
+	public boolean isConnected();
+	
+	/**
 	 * Updates the user list
 	 * @return Whether the user list have been updated well
 	 */
 	public void askClientsList();
+	
+	/**
+	 * Gets the clients list
+	 * @return The clients list
+	 */
+	public List<String> getClients();
 	
 	/**
 	 * Sends a private message to the given receivers

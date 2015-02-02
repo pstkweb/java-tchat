@@ -1,0 +1,4 @@
+compile
+runClient1
+runClient2
+runServer
