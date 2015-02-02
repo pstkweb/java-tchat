@@ -53,10 +53,10 @@ public class ClientHandler implements Runnable {
 							name = pseudo;
 							server.addClient(name, this);
 							
-							out.println(Protocol.OK);
+							out.println(Protocol.CONNECT_OK);
 						} else {
 							System.out.println("Pseudo : <" + pseudo + "> unavailable");
-							out.println(Protocol.KO);
+							out.println(Protocol.CONNECT_KO);
 						}
 
 						out.flush();
@@ -112,7 +112,7 @@ public class ClientHandler implements Runnable {
 	public void majUsersList() {
 		String token = new BigInteger(130, new SecureRandom()).toString(32);
 		
-		out.println(Protocol.MAJ_USERS_LIST);
+		out.println(Protocol.USERS_LIST);
 		out.println(token);
 		for (String user : server.getUsernames()) {
 			out.println(user);

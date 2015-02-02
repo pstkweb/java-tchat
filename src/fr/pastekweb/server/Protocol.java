@@ -2,8 +2,8 @@ package fr.pastekweb.server;
 
 public enum Protocol {
 	CONNECT("connexion"),
-	OK("ok"),
-	KO("ko"),
+	CONNECT_OK("ok"),
+	CONNECT_KO("ko"),
 	USERS_LIST("listUsers"),
 	NEW_USER("addUser"),
 	USER_LEAVE("removeUser"),
@@ -19,7 +19,7 @@ public enum Protocol {
 	}
 	
 	public String toString() {
-		return name;
+		return "#"+name+"#";
 	}
 	
 	public static Protocol createProtocol(String str) {
