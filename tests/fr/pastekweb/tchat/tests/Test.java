@@ -1,9 +1,9 @@
-package fr.pastekweb.server;
+package fr.pastekweb.tchat.tests;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import fr.pastekweb.client.CientStub;
+import fr.pastekweb.tchat.client.CientStub;
 
 public class Test {
 	public static void main(String[] args) {

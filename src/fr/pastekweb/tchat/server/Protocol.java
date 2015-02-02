@@ -1,4 +1,4 @@
-package fr.pastekweb.server;
+package fr.pastekweb.tchat.server;
 
 public enum Protocol {
 	CONNECT("connexion"),

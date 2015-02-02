@@ -1,4 +1,4 @@
-package fr.pastekweb.client;
+package fr.pastekweb.tchat.client;
 
 import java.util.List;
 

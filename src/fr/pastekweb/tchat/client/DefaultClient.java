@@ -1,4 +1,4 @@
-package fr.pastekweb.client;
+package fr.pastekweb.tchat.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.pastekweb.server.Protocol;
+import fr.pastekweb.tchat.server.Protocol;
 
 /**
  * The default Client class

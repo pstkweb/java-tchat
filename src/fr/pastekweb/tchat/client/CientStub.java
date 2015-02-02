@@ -1,4 +1,4 @@
-package fr.pastekweb.client;
+package fr.pastekweb.tchat.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import fr.pastekweb.server.Protocol;
+import fr.pastekweb.tchat.server.Protocol;
 
 public class CientStub {
 	private final int PORT = 1337;
