@@ -22,7 +22,7 @@ public class Server {
 			
 			while (true) {
 				Socket client = socket.accept();
-				
+				System.out.println("Nb users : " + clients.size());
 				new ClientHandler(client, this);
 			}
 		} catch (IOException e) {
@@ -49,11 +49,14 @@ public class Server {
 	public void addClient(String pseudo, ClientHandler client) {
 		clients.put(pseudo, client);
 
-		// Notify all clients of a new user
+		// Notify all clients of a new user, except the new one
 		Iterator<Entry<String, ClientHandler>> it = clients.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, ClientHandler> clientTo = (Entry<String, ClientHandler>) it.next();
-			clientTo.getValue().majUsersList();
+			
+			if (!pseudo.equals(clientTo.getKey())) {
+				clientTo.getValue().sendNewUser(pseudo);
+			}
 		}
 	}
 	
