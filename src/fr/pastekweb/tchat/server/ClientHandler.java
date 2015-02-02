@@ -1,4 +1,4 @@
-package fr.pastekweb.server;
+package fr.pastekweb.tchat.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,6 +52,7 @@ public class ClientHandler implements Runnable {
 							System.out.println("Pseudo : <" + pseudo + "> free");
 							name = pseudo;
 							
+							System.out.println("Send "+Protocol.CONNECT_OK);
 							out.println(Protocol.CONNECT_OK);
 							out.flush();
 							
@@ -59,6 +60,7 @@ public class ClientHandler implements Runnable {
 						} else {
 							System.out.println("Pseudo : <" + pseudo + "> unavailable");
 							
+							System.out.println("Send "+Protocol.CONNECT_KO);
 							out.println(Protocol.CONNECT_KO);
 							out.flush();
 						}
@@ -96,10 +98,15 @@ public class ClientHandler implements Runnable {
 						
 						Iterator<Map.Entry<String, ClientHandler>> it = server.getClients().entrySet().iterator();
 						while (it.hasNext()) {
+							// TODO: change it.next() -> it.next().getValue() ?
 							Map.Entry<String, ClientHandler> client = it.next();
 							
+							System.out.println("Send: "+Protocol.RECEIVE_MSG+" to ["+client.getValue().name+"]");
 							client.getValue().getOut().println(Protocol.RECEIVE_MSG);
+							client.getValue().getOut().flush();
+							System.out.println("from: "+name);
 							client.getValue().getOut().println(name);
+							System.out.println("message: "+mess);
 							client.getValue().getOut().println(mess);
 							client.getValue().getOut().flush();
 						}
