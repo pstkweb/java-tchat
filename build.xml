@@ -2,16 +2,17 @@
 <project name="Server Tchat" default="" basedir=".">
 	<target name="compile" description="Compilation des sources">
 		<javac srcdir="./src" destdir="./bin" includeantruntime="false" />
+		<javac srcdir="./tests" destdir="./bin" includeantruntime="false" />
 	</target>
 	<target name="runServer" description="Run the server part" depends="compile">
-		<java classname="fr.pastekweb.server.Server" fork="true">
+		<java classname="fr.pastekweb.tchat.server.Server" fork="true">
 			<classpath>
 				<pathelement path="./bin"/>
 			</classpath>
 		</java>
 	</target>
 	<target name="runClient1" description="Run a client named Maxime" depends="compile">
-		<java classname="fr.pastekweb.server.Test" fork="true">
+		<java classname="fr.pastekweb.tchat.tests.Test" fork="true">
 			<arg value="Maxime" />
 			<classpath>
 				<pathelement path="./bin"/>
@@ -19,7 +20,7 @@
 		</java>
 	</target>
 	<target name="runClient2" description="Run a client named Thomas" depends="compile">
-		<java classname="fr.pastekweb.server.Test" fork="true">
+		<java classname="fr.pastekweb.tchat.tests.Test" fork="true">
 			<arg value="Thomas" />
 			<classpath>
 				<pathelement path="./bin"/>

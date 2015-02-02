@@ -36,4 +36,16 @@ public interface IClient extends Runnable
 	 * @param message The message to send
 	 */
 	public void sendPublicMessage(String message);
+	
+	/**
+	 * Gets the list of clients
+	 * @return The list of clients
+	 */
+	public List<String> getUsers();
+	
+	/**
+	 * Whether the user is connected
+	 * @return Boolean whether the user is connected.
+	 */
+	public boolean isConnected();
 }

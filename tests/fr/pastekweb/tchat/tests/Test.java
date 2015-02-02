@@ -3,7 +3,8 @@ package fr.pastekweb.tchat.tests;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import fr.pastekweb.tchat.client.CientStub;
+import fr.pastekweb.tchat.client.DefaultClient;
+import fr.pastekweb.tchat.client.IClient;
 
 public class Test {
 	public static void main(String[] args) {
@@ -12,29 +13,20 @@ public class Test {
 			return;
 		}
 		
-		CientStub cl = new CientStub();
+		IClient cl = new DefaultClient();
+		new Thread(cl).start();
 		
 		// Connexion au serveur
 		String pseudo = args[0];
-		while (!cl.connect(pseudo)) {
+		while (cl.connect(pseudo)) {
 			pseudo = new BigInteger(130, new SecureRandom()).toString(32);
 		}
-		System.out.println("Logged in as : " + pseudo);
 		
 		// Récupération de la liste des utilisateurs
-		cl.receiveUsersList();
-		System.out.println("Liste users " + cl.getUsers().size() + " :");
-		for (String u : cl.getUsers()) {
-			System.out.println("- " + u);
-		}
+		cl.askClientsList();
 		
 		// Envoi d'un MSG
 		String msg = new BigInteger(130, new SecureRandom()).toString(32);
-		cl.sendMessage(msg);
-		
-		// Wait for server messages
-		while (true) {
-			cl.waitForMessage();
-		}
+		cl.sendPublicMessage(msg);
 	}
 }
