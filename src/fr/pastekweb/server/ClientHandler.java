@@ -51,25 +51,29 @@ public class ClientHandler implements Runnable {
 						if (!server.isUsed(pseudo)) {
 							System.out.println("Pseudo : <" + pseudo + "> free");
 							name = pseudo;
-							server.addClient(name, this);
 							
 							out.println(Protocol.OK);
+							out.flush();
+							
+							server.addClient(name, this);
 						} else {
 							System.out.println("Pseudo : <" + pseudo + "> unavailable");
+							
 							out.println(Protocol.KO);
+							out.flush();
 						}
 
-						out.flush();
 						break;
 					case USERS_LIST:
+						sendMessage(Protocol.USERS_LIST.toString());
+						
 						String token = new BigInteger(130, new SecureRandom()).toString(32);
 						System.out.println("Write token[" + token + "] for users list");
-						out.println(token);
+						sendMessage(token);
 						for (String user : server.getUsernames()) {
-							out.println(user);
+							sendMessage(user);
 						}
-						out.println(token);
-						out.flush();
+						sendMessage(token);
 						break;
 					case SEND_MP:
 						ArrayList<ClientHandler> users = new ArrayList<ClientHandler>();
@@ -109,15 +113,24 @@ public class ClientHandler implements Runnable {
 		}
 	}
 	
-	public void majUsersList() {
+	public void sendNewUser(String pseudo) {
+		sendMessage(Protocol.NEW_USER.toString());
+		sendMessage(pseudo);
+	}
+	
+	public void getUsersList() {
 		String token = new BigInteger(130, new SecureRandom()).toString(32);
 		
-		out.println(Protocol.MAJ_USERS_LIST);
-		out.println(token);
+		sendMessage(Protocol.USERS_LIST.toString());
+		sendMessage(token);
 		for (String user : server.getUsernames()) {
-			out.println(user);
+			sendMessage(user);
 		}
-		out.println(token);
+		sendMessage(token);
+	}
+	
+	private void sendMessage(String msg) {
+		out.println(msg);
 		out.flush();
 	}
 
