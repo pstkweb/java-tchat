@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import fr.pastekweb.server.Protocol;
 
@@ -16,8 +15,11 @@ public class CientStub {
 	private Socket socket;
 	private PrintWriter write;
 	private BufferedReader read;
+	private ArrayList<String> users;
 	
 	public CientStub() {
+		users = new ArrayList<String>();
+		
 		try {
 			socket = new Socket("127.0.0.1", PORT);
 			
@@ -30,12 +32,17 @@ public class CientStub {
 	
 	public boolean connect(String pseudo) {
 		write.println(Protocol.CONNECT);
+		write.flush();
 		write.println(pseudo);
 		write.flush();
 		
 		try {
-			System.out.println("Waiting for server response");
-			if (Protocol.CONNECT_OK.toString().equals(read.readLine())) {
+
+			System.out.println("Waiting for server response on pseudo <" + pseudo + ">");
+			String result = read.readLine();
+			
+			System.out.println("Response : ~" + result + "~");
+			if (Protocol.CONNECT_OK.toString().equals(result)) {
 				return true;
 			}
 		} catch (IOException e) {
@@ -45,36 +52,41 @@ public class CientStub {
 		return false;
 	}
 	
-	public Collection<String> usersList() {
+	public void receiveUsersList() {
 		write.println(Protocol.USERS_LIST);
 		write.flush();
 
-		ArrayList<String> users = new ArrayList<String>();
 		String token;
 		try {
 			System.out.println("Waiting for server response");
-			token = read.readLine();
-			String user;
-			while (!(user = read.readLine()).equals(token)) {
-				users.add(user);
+			
+			String result = read.readLine();
+			if (result.equals(Protocol.USERS_LIST.toString())) {
+				users.clear();
+				
+				token = read.readLine();
+				String user;
+				while (!(user = read.readLine()).equals(token)) {
+					users.add(user);
+				}
+			} else {
+				System.out.println("Colision de trames");
 			}
 		} catch (IOException e) {
 			System.out.println("Problème d'E/S : " + e.getMessage());
 		}
-		
-		return users;
-	}
-	
-	public Collection<String> majUsersList() {
-		ArrayList<String> users = new ArrayList<String>();
-		
-		
-		return users;
 	}
 	
 	public void sendMessage(String msg) {
 		write.println(Protocol.SEND_MSG);
 		write.flush();
+		
+		write.println(msg);
+		write.flush();
+	}
+	
+	public ArrayList<String> getUsers() {
+		return users;
 	}
 	
 	public void waitForMessage() {
@@ -83,19 +95,22 @@ public class CientStub {
 			System.out.println(msg);
 			
 			switch (Protocol.createProtocol(msg)) {
-				case USERS_LIST:
-					ArrayList<String> users = new ArrayList<String>();
-					String token = read.readLine();
 
-					String user;
-					while (!(user = read.readLine()).equals(token)) {
-						users.add(user);
-					}
+				case NEW_USER:
+					String pseudo = read.readLine();
+					
+					users.add(pseudo);
 					
 					System.out.println("Liste users " + users.size() + " :");
 					for (String u : users) {
 						System.out.println("- " + u);
 					}
+					break;
+				case RECEIVE_MSG:
+					String emetteur = read.readLine();
+					String writedMsg = read.readLine();
+					
+					System.out.println(emetteur + " a écrit : " + writedMsg);
 					break;
 				default:
 					System.out.println("Receive : " + msg);
