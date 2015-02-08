@@ -18,11 +18,22 @@ public interface IClient extends Runnable
 	 */
 	public boolean connect(String pseudo);
 	
+	 /** Whether the user is connected
+	 * @return boolean whether the user is connected.
+	 */
+	public boolean isConnected();
+	
 	/**
 	 * Updates the user list
 	 * @return Whether the user list have been updated well
 	 */
 	public void askClientsList();
+	
+	/**
+	 * Gets the clients list
+	 * @return The clients list
+	 */
+	public List<String> getClients();
 	
 	/**
 	 * Sends a private message to the given receivers
@@ -36,16 +47,4 @@ public interface IClient extends Runnable
 	 * @param message The message to send
 	 */
 	public void sendPublicMessage(String message);
-	
-	/**
-	 * Gets the list of clients
-	 * @return The list of clients
-	 */
-	public List<String> getUsers();
-	
-	/**
-	 * Whether the user is connected
-	 * @return Boolean whether the user is connected.
-	 */
-	public boolean isConnected();
 }

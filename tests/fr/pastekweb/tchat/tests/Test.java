@@ -18,7 +18,7 @@ public class Test {
 		
 		// Connexion au serveur
 		String pseudo = args[0];
-		while (cl.connect(pseudo)) {
+		while (!cl.connect(pseudo)) {
 			pseudo = new BigInteger(130, new SecureRandom()).toString(32);
 		}
 		

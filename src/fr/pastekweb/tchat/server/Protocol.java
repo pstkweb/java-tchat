@@ -2,8 +2,8 @@ package fr.pastekweb.tchat.server;
 
 public enum Protocol {
 	CONNECT("connexion"),
-	CONNECT_OK("ok"),
-	CONNECT_KO("ko"),
+	CONNECT_OK("connect_ok"),
+	CONNECT_KO("connect_ko"),
 	USERS_LIST("listUsers"),
 	NEW_USER("addUser"),
 	USER_LEAVE("removeUser"),

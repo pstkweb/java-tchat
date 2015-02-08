@@ -83,27 +83,38 @@ public class DefaultClient implements IClient
 		}
 	}
 
-	@Override
-	public synchronized boolean connect(String pseudo)
+	public boolean connect(String pseudo)
 	{
+		System.out.println("Send: "+Protocol.CONNECT);
+		System.out.println("Pseudo: <"+pseudo+">");
 		send(Protocol.CONNECT);
 		this.pseudo = pseudo;
 		send(pseudo);
 		
-		try {
-			wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		synchronized (this) {
+			try {
+				System.out.println("Waiting for server");
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		
+		return connected;
+	}
+	
+	@Override
+	public boolean isConnected() 
+	{
 		return connected;
 	}
 
 	@Override
 	public void askClientsList()
 	{
+		System.out.println("Send: "+Protocol.USERS_LIST);
 		send(Protocol.USERS_LIST);
+		
+		System.out.println("Waiting for server");
 	}
 	
 	/**
@@ -112,17 +123,18 @@ public class DefaultClient implements IClient
 	 */
 	private boolean receiveClientList()
 	{
+		System.out.println("User list");
 		try {
 			String token = reader.readLine();
+			System.out.println("Token: "+token);
 			String pseudo;
-			while ((pseudo = reader.readLine()) != token) {
+			
+			System.out.println("Add client :");
+			while (!(pseudo = reader.readLine()).equals(token)) {
+				System.out.println("- "+pseudo);
 				addClient(pseudo);
 			}
-
-			System.out.println("Liste users " + clients.size() + " :");
-			for (String u : clients) {
-				System.out.println("- " + u);
-			}
+			System.out.println("Token end: "+pseudo);
 			
 			return true;
 		} catch (IOException e) {
@@ -200,10 +212,38 @@ public class DefaultClient implements IClient
 		send(message);
 	}
 	
+	/**
+	 * Receives a private message
+	 * @return boolean whether the message have been well received
+	 */
 	private boolean receivePrivateMessage()
 	{
 		try {
+			String from = reader.readLine();
 			String message = reader.readLine();
+			
+			System.out.println("Private message from "+from+": "+message);
+			// TODO: handle the reception
+			
+			return true;
+		} catch (IOException e) {
+			System.out.println("Stream reading error: "+e.getMessage());
+		}
+		return false;
+	}
+	
+	/**
+	 * Receives a private message
+	 * @return boolean whether the message have been well received
+	 */
+	private boolean receivePublicMessage()
+	{
+		try {
+			String from = reader.readLine();
+			String message = reader.readLine();
+			
+			System.out.println("Public message from "+from+": "+message);
+			// TODO: handle the reception
 			
 			return true;
 		} catch (IOException e) {
@@ -216,7 +256,7 @@ public class DefaultClient implements IClient
 	 * Gets the list of clients
 	 * @return The list of clients
 	 */
-	public List<String> getUsers()
+	public List<String> getClients()
 	{
 		return clients;
 	}
@@ -238,37 +278,36 @@ public class DefaultClient implements IClient
 		while (isAlive) {
 			try {
 				String message = reader.readLine();
-				synchronized(this) {
-					switch (Protocol.createProtocol(message)) {
-						case CONNECT_OK:
-							connected = true;
-							System.out.println("Logged in as " + pseudo);
-							
-							notify();
-							break;
-						case CONNECT_KO:
-							connected = false;
-							pseudo = "";
-							
-							notify();
-							break;
-						case USERS_LIST:
-							receiveClientList();
-						case NEW_USER:
-							receiveNewClient();
-							break;
-						case USER_LEAVE:
-							receiveClientLeft();
-							break;
-						case RECEIVE_MP:
-							receivePrivateMessage();
-							break;
-						case RECEIVE_MSG:
-							// TODO receive public message
-							break;
-						default:
-							break;
-					}
+				System.out.println("----------------------------");
+				System.out.println("msg: "+message);
+				System.out.println("proto: "+Protocol.createProtocol(message));
+				switch (Protocol.createProtocol(message)) {
+					case CONNECT_OK:
+						connected = true;
+						// TODO: remove log
+						System.out.println("Logged in as: "+pseudo);
+						synchronized (this) { notify(); }
+						break;
+					case CONNECT_KO:
+						connected = false;
+						synchronized (this) { notify(); }
+						break;
+					case USERS_LIST:
+						receiveClientList();
+					case NEW_USER:
+						receiveNewClient();
+						break;
+					case USER_LEAVE:
+						receiveClientLeft();
+						break;
+					case RECEIVE_MP:
+						receivePrivateMessage();
+						break;
+					case RECEIVE_MSG:
+						receivePublicMessage();
+						break;
+					default:
+						break;
 				}
 			} catch (IOException e) {
 				System.out.println("Input/Output error : " + e.getMessage());
@@ -276,13 +315,5 @@ public class DefaultClient implements IClient
 				System.out.println("Unsupported command.");
 			}
 		}
-	}
-
-	/**
-	 * Whether the user is connected or not.
-	 * @return Boolean whether the user is connected.
-	 */
-	public boolean isConnected() {
-		return connected;
 	}
 }
