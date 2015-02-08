@@ -12,13 +12,42 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * The client thread used by the server
+ * 
+ * @author Thomas TRIBOULT
+ */
 public class ClientHandler implements Runnable {
+	/**
+	 * The socket used by that client
+	 */
 	private Socket socket;
+	/**
+	 * A reference to the server main class
+	 */
 	private Server server;
+	/**
+	 * The pseudo of this user
+	 */
 	private String name;
+	/**
+	 * The position of this user
+	 */
+	private Position position;
+	/**
+	 * The socket input stream
+	 */
 	private BufferedReader in;
+	/**
+	 * The socket output stream
+	 */
 	private PrintWriter out;
 	
+	/**
+	 * Instantiate a new client thread
+	 * @param s The socket used by that client
+	 * @param serv The main server class reference
+	 */
 	public ClientHandler(Socket s, Server serv) {
 		server = serv;
 		socket = s;
@@ -53,29 +82,25 @@ public class ClientHandler implements Runnable {
 							name = pseudo;
 							
 							System.out.println("Send "+Protocol.CONNECT_OK);
-							out.println(Protocol.CONNECT_OK);
-							out.flush();
+							sendMessage(Protocol.CONNECT_OK.toString());
 							
 							server.addClient(name, this);
 						} else {
 							System.out.println("Pseudo : <" + pseudo + "> unavailable");
 							
 							System.out.println("Send "+Protocol.CONNECT_KO);
-							out.println(Protocol.CONNECT_KO);
-							out.flush();
+							sendMessage(Protocol.CONNECT_KO.toString());
 						}
 
 						break;
 					case USERS_LIST:
-						sendMessage(Protocol.USERS_LIST.toString());
-						
-						String token = new BigInteger(130, new SecureRandom()).toString(32);
-						System.out.println("Write token[" + token + "] for users list");
-						sendMessage(token);
+						String tokenUsers = new BigInteger(130, new SecureRandom()).toString(32);
+						System.out.println("Write token[" + tokenUsers + "] for users list");
+						sendMessage(tokenUsers);
 						for (String user : server.getUsernames()) {
 							sendMessage(user);
 						}
-						sendMessage(token);
+						sendMessage(tokenUsers);
 						break;
 					case SEND_MP:
 						ArrayList<ClientHandler> users = new ArrayList<ClientHandler>();
@@ -87,10 +112,9 @@ public class ClientHandler implements Runnable {
 						String msg = in.readLine();
 						
 						for (ClientHandler client : users) {
-							client.getOut().println(Protocol.RECEIVE_MP);
-							client.getOut().println(name);
-							client.getOut().println(msg);
-							client.getOut().flush();
+							client.sendMessage(Protocol.RECEIVE_MP.toString());
+							client.sendMessage(name);
+							client.sendMessage(msg);
 						}
 						break;
 					case SEND_MSG:
@@ -98,18 +122,50 @@ public class ClientHandler implements Runnable {
 						
 						Iterator<Map.Entry<String, ClientHandler>> it = server.getClients().entrySet().iterator();
 						while (it.hasNext()) {
-							// TODO: change it.next() -> it.next().getValue() ?
-							Map.Entry<String, ClientHandler> client = it.next();
+							ClientHandler client = it.next().getValue();
 							
-							System.out.println("Send: "+Protocol.RECEIVE_MSG+" to ["+client.getValue().name+"]");
-							client.getValue().getOut().println(Protocol.RECEIVE_MSG);
-							client.getValue().getOut().flush();
+							System.out.println("Send: "+Protocol.RECEIVE_MSG+" to ["+client.name+"]");
+							client.sendMessage(Protocol.RECEIVE_MSG.toString());
 							System.out.println("from: "+name);
-							client.getValue().getOut().println(name);
+							client.sendMessage(name);
 							System.out.println("message: "+mess);
-							client.getValue().getOut().println(mess);
-							client.getValue().getOut().flush();
+							client.sendMessage(mess);
 						}
+						break;
+					case POSITIONS_LIST:
+						String tokenPos = new BigInteger(130, new SecureRandom()).toString(32);
+						System.out.println("Write token[" + tokenPos + "] for positions list");
+						sendMessage(tokenPos);
+
+						Iterator<Map.Entry<String, Position>> positionsIt = server.getPositions().entrySet().iterator();
+						while (positionsIt.hasNext()) {
+							Map.Entry<String, Position> client = positionsIt.next();
+							
+							sendMessage(client.getKey());
+							sendMessage(client.getValue().toString());
+						}
+						
+						sendMessage(tokenPos);
+						
+						break;
+					case SEND_POS:
+						String pos = in.readLine();
+						String[] coordinates = pos.split(":");
+						
+						position = new Position(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
+
+						Iterator<Map.Entry<String, ClientHandler>> destIt = server.getClients().entrySet().iterator();
+						while (destIt.hasNext()) {
+							ClientHandler client = destIt.next().getValue();
+							
+							System.out.println("Send: "+Protocol.RECEIVE_POS+" to ["+client.getName()+"]");
+							client.sendMessage(Protocol.RECEIVE_POS.toString());
+							System.out.println("from: "+name);
+							client.sendMessage(name);
+							System.out.println("position: "+position);
+							client.sendMessage(position.toString());
+						}
+						
 						break;
 					default:
 						System.out.println("Message non supporté par le serveur.");
@@ -120,15 +176,30 @@ public class ClientHandler implements Runnable {
 		}
 	}
 	
+	/**
+	 * Send the new user to that client
+	 * @param pseudo The pseudo of the new user
+	 */
 	public void sendNewUser(String pseudo) {
 		sendMessage(Protocol.NEW_USER.toString());
 		sendMessage(pseudo);
 	}
 	
+	/**
+	 * Send the new position of a user to that client
+	 * @param pos The psotion of the new user
+	 */
+	public void sendPosition(Position pos) {
+		sendMessage(Protocol.RECEIVE_POS.toString());
+		sendMessage(pos.toString());
+	}
+	
+	/**
+	 * Send the user list to that client
+	 */
 	public void getUsersList() {
 		String token = new BigInteger(130, new SecureRandom()).toString(32);
 		
-
 		sendMessage(Protocol.USERS_LIST.toString());
 		sendMessage(token);
 		for (String user : server.getUsernames()) {
@@ -137,16 +208,44 @@ public class ClientHandler implements Runnable {
 		sendMessage(token);
 	}
 	
+	/**
+	 * Send a message to the client side through the output stream
+	 * @param msg The message to send
+	 */
 	private void sendMessage(String msg) {
 		out.println(msg);
 		out.flush();
 	}
-
-	public PrintWriter getOut() {
-		return out;
-	}
 	
+	/**
+	 * Get the socket of this client
+	 * @return The socket of the client
+	 */
 	public Socket getSocket() {
 		return socket;
+	}
+	
+	/**
+	 * Get the name of this client
+	 * @return The name of the client
+	 */
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Get the position of this client
+	 * @return The position of the client
+	 */
+	public Position getPosition() {
+		return position;
+	}
+	
+	/**
+	 * Set the position of this client
+	 * @param p The new position of the client
+	 */
+	public void setPosition(Position p) {
+		position = p;
 	}
 }
