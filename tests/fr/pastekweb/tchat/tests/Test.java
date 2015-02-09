@@ -6,7 +6,18 @@ import java.security.SecureRandom;
 import fr.pastekweb.tchat.client.DefaultClient;
 import fr.pastekweb.tchat.client.IClient;
 
+/**
+ * Test the communications between the server and clients
+ * by client instantiation
+ * 
+ * @author Thomas TRIBOULT
+ */
 public class Test {
+	/**
+	 * Launch the tests on client side
+	 * 
+	 * @param args The first argument must be the client pseudo 
+	 */
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println("Usage : java Test <nomUser>");
@@ -18,7 +29,6 @@ public class Test {
 		
 		// Connexion au serveur
 		String pseudo = args[0];
-		
 		while (!cl.connect(pseudo)) {
 			pseudo = new BigInteger(130, new SecureRandom()).toString(32);
 		}
@@ -29,6 +39,5 @@ public class Test {
 		// Envoi d'un MSG
 		String msg = new BigInteger(130, new SecureRandom()).toString(32);
 		cl.sendPublicMessage(msg);
-		
 	}
 }

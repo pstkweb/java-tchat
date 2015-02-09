@@ -14,12 +14,14 @@ public interface IClient extends Runnable
 	/**
 	 * Connects the Client on the Server
 	 * @param pseudo The client pseudo
+	 * 
 	 * @return Whether the client is connected
 	 */
 	public boolean connect(String pseudo);
-	
+
 	/**
 	 * Whether the user is connected
+	 * 
 	 * @return boolean whether the user is connected.
 	 */
 	public boolean isConnected();
