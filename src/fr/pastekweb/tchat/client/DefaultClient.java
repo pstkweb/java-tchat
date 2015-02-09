@@ -83,6 +83,7 @@ public class DefaultClient implements IClient
 		}
 	}
 
+	@Override
 	public boolean connect(String pseudo)
 	{
 		System.out.println("Send: "+Protocol.CONNECT);
