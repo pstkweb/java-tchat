@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ public class ClientHandler implements Runnable {
 	/**
 	 * The pseudo of this user
 	 */
-	private String name;
+	private String username;
 	/**
 	 * The position of this user
 	 */
@@ -42,6 +41,10 @@ public class ClientHandler implements Runnable {
 	 * The socket output stream
 	 */
 	private PrintWriter out;
+	/**
+	 * Whether connection is alive
+	 */
+	private boolean isAlive;
 	
 	/**
 	 * Instantiate a new client thread
@@ -51,7 +54,8 @@ public class ClientHandler implements Runnable {
 	public ClientHandler(Socket s, Server serv) {
 		server = serv;
 		socket = s;
-		name = "";
+		username = "";
+		isAlive = true;
 		
 		try {
 			in = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -66,107 +70,35 @@ public class ClientHandler implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (isAlive) {
 			try {
-				System.out.println("Waiting for user");
+				// TODO Removes logs
 				String s = in.readLine();
-				System.out.println("--------------------");
-				System.out.println("msg : " + s);
-				System.out.println("proto: " + Protocol.createProtocol(s));
+				
+				System.out.println("-------------------");
+				System.out.println("s: "+s);
 				switch (Protocol.createProtocol(s)) {
+				
 					case CONNECT:
-						System.out.println("User connexion");
-						String pseudo = in.readLine();
-						if (!server.isUsed(pseudo)) {
-							System.out.println("Pseudo : <" + pseudo + "> free");
-							name = pseudo;
-							
-							System.out.println("Send "+Protocol.CONNECT_OK);
-							sendMessage(Protocol.CONNECT_OK.toString());
-							
-							server.addClient(name, this);
-						} else {
-							System.out.println("Pseudo : <" + pseudo + "> unavailable");
-							
-							System.out.println("Send "+Protocol.CONNECT_KO);
-							sendMessage(Protocol.CONNECT_KO.toString());
-						}
-
+						handleConnectionRequest();
 						break;
+						
 					case USERS_LIST:
-						String tokenUsers = new BigInteger(130, new SecureRandom()).toString(32);
-						System.out.println("Write token[" + tokenUsers + "] for users list");
-						sendMessage(tokenUsers);
-						for (String user : server.getUsernames()) {
-							sendMessage(user);
-						}
-						sendMessage(tokenUsers);
+						sendUsersList();
 						break;
-					case SEND_MP:
-						ArrayList<ClientHandler> users = new ArrayList<ClientHandler>();
-						String taken = in.readLine();
-						String user;
-						while(!(user = in.readLine()).equals(taken)) {
-							users.add(server.getClient(user));
-						}
-						String msg = in.readLine();
 						
-						for (ClientHandler client : users) {
-							client.sendMessage(Protocol.RECEIVE_MP.toString());
-							client.sendMessage(name);
-							client.sendMessage(msg);
-						}
-						break;
 					case SEND_MSG:
-						String mess = in.readLine();
-						
-						Iterator<Map.Entry<String, ClientHandler>> it = server.getClients().entrySet().iterator();
-						while (it.hasNext()) {
-							ClientHandler client = it.next().getValue();
-							
-							System.out.println("Send: "+Protocol.RECEIVE_MSG+" to ["+client.name+"]");
-							client.sendMessage(Protocol.RECEIVE_MSG.toString());
-							System.out.println("from: "+name);
-							client.sendMessage(name);
-							System.out.println("message: "+mess);
-							client.sendMessage(mess);
-						}
+						sendMessage();
 						break;
+						
 					case POSITIONS_LIST:
-						String tokenPos = new BigInteger(130, new SecureRandom()).toString(32);
-						System.out.println("Write token[" + tokenPos + "] for positions list");
-						sendMessage(tokenPos);
-
-						Iterator<Map.Entry<String, Position>> positionsIt = server.getPositions().entrySet().iterator();
-						while (positionsIt.hasNext()) {
-							Map.Entry<String, Position> client = positionsIt.next();
-							
-							sendMessage(client.getKey());
-							sendMessage(client.getValue().toString());
-						}
-						
-						sendMessage(tokenPos);
-						
+						sendPositionsList();
 						break;
+						
 					case SEND_POS:
-						String pos = in.readLine();
-						String[] coordinates = pos.split(":");
-						
-						position = new Position(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
-
-						Iterator<Map.Entry<String, ClientHandler>> destIt = server.getClients().entrySet().iterator();
-						while (destIt.hasNext()) {
-							ClientHandler client = destIt.next().getValue();
-							
-							System.out.println("Send: "+Protocol.RECEIVE_POS+" to ["+client.getName()+"]");
-							client.sendMessage(Protocol.RECEIVE_POS.toString());
-							System.out.println("from: "+name);
-							client.sendMessage(name);
-							System.out.println("position: "+position);
-							client.sendMessage(position.toString());
-						}
-						
+						sendUserPosition();
 						break;
+						
 					default:
 						System.out.println("Message non supporté par le serveur.");
 				}
@@ -177,42 +109,146 @@ public class ClientHandler implements Runnable {
 	}
 	
 	/**
+	 * Handle the user 's connection request
+	 * @throws IOException If an input/output error occurs
+	 */
+	private void handleConnectionRequest() throws IOException
+	{
+		String pseudo = in.readLine();
+		if (!server.isUsed(pseudo)) {
+			username = pseudo;
+			send(Protocol.CONNECT_OK.toString());
+			server.addClient(username, this);
+		} else {
+			send(Protocol.CONNECT_KO.toString());
+		}
+	}
+	
+	/**
+	 * Send the users list of the asked room
+	 * @throws IOException Whether an input/output error occurs
+	 */
+	private void sendUsersList() throws IOException
+	{
+		// TODO Removes logs
+
+		// Gets the room 's id of the requested list
+		String roomID = in.readLine();
+		String tokenUsers = new BigInteger(130, new SecureRandom()).toString(32);
+		
+		send(Protocol.USERS_LIST);
+		send(roomID);
+		send(tokenUsers);
+		
+		System.out.println("Protocol: "+Protocol.USERS_LIST);
+		System.out.println("Room id: "+roomID);
+		System.out.println("Token: "+tokenUsers);
+		
+		for (String user : server.getUsernames(roomID)) {
+			send(user);
+			System.out.println("User: "+user);
+		}
+		send(tokenUsers);
+		System.out.println("End token: "+tokenUsers);
+	}
+	
+	/**
+	 * Sends a message
+	 * @throws IOException Whether an input/output error occurs
+	 */
+	private void sendMessage() throws IOException
+	{
+		String roomID = in.readLine();
+		String mess = in.readLine();
+		
+		System.out.println("Room id: "+roomID);
+		System.out.println("Message: "+mess);
+		
+		Iterator<Map.Entry<String, ClientHandler>> it = server.getClients().entrySet().iterator();
+		while (it.hasNext()) {
+			ClientHandler client = it.next().getValue();
+			
+			client.send(Protocol.RECEIVE_MSG.toString());
+			client.send(roomID);
+			client.send(username);
+			client.send(mess);
+		}
+	}
+	
+	/**
+	 * Sends the list of the 
+	 */
+	private void sendPositionsList()
+	{
+		// TODO Removes logs
+		// TODO Handle the room 's id
+		
+		String tokenPos = new BigInteger(130, new SecureRandom()).toString(32);
+		send(tokenPos);
+
+		Iterator<Map.Entry<String, Position>> positionsIt = server.getPositions().entrySet().iterator();
+		while (positionsIt.hasNext()) {
+			Map.Entry<String, Position> client = positionsIt.next();
+			
+			send(client.getKey());
+			send(client.getValue().toString());
+		}
+		
+		send(tokenPos);
+	}
+	
+	/**
+	 * Sends the user position
+	 * @throws IOException Whether an input/output error occurs
+	 */
+	private void sendUserPosition() throws IOException
+	{
+		// TODO Removes logs
+		// TODO Handle the room 's id
+		
+		String pos = in.readLine();
+		String[] coordinates = pos.split(":");
+		
+		position = new Position(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
+
+		Iterator<Map.Entry<String, ClientHandler>> destIt = server.getClients().entrySet().iterator();
+		while (destIt.hasNext()) {
+			ClientHandler client = destIt.next().getValue();
+			
+			System.out.println("Send: "+Protocol.RECEIVE_POS+" to ["+client.getName()+"]");
+			client.send(Protocol.RECEIVE_POS.toString());
+			System.out.println("from: "+username);
+			client.send(username);
+			System.out.println("position: "+position);
+			client.send(position.toString());
+		}
+	}
+	
+	/**
 	 * Send the new user to that client
 	 * @param pseudo The pseudo of the new user
 	 */
-	public void sendNewUser(String pseudo) {
-		sendMessage(Protocol.NEW_USER.toString());
-		sendMessage(pseudo);
+	public void sendNewUser(String pseudo, String roomID) {
+		send(Protocol.NEW_USER);
+		send(roomID);
+		send(pseudo);
 	}
 	
 	/**
 	 * Send the new position of a user to that client
 	 * @param pos The psotion of the new user
 	 */
-	public void sendPosition(Position pos) {
-		sendMessage(Protocol.RECEIVE_POS.toString());
-		sendMessage(pos.toString());
-	}
-	
-	/**
-	 * Send the user list to that client
-	 */
-	public void getUsersList() {
-		String token = new BigInteger(130, new SecureRandom()).toString(32);
-		
-		sendMessage(Protocol.USERS_LIST.toString());
-		sendMessage(token);
-		for (String user : server.getUsernames()) {
-			sendMessage(user);
-		}
-		sendMessage(token);
+	public void sendPosition(Position pos, String roomID) {
+		send(Protocol.RECEIVE_POS);
+		send(roomID);
+		send(pos.toString());
 	}
 	
 	/**
 	 * Send a message to the client side through the output stream
 	 * @param msg The message to send
 	 */
-	private void sendMessage(String msg) {
+	private void send(Object msg) {
 		out.println(msg);
 		out.flush();
 	}
@@ -230,7 +266,7 @@ public class ClientHandler implements Runnable {
 	 * @return The name of the client
 	 */
 	public String getName() {
-		return name;
+		return username;
 	}
 	
 	/**

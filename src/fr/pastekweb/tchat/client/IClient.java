@@ -1,9 +1,5 @@
 package fr.pastekweb.tchat.client;
 
-import java.util.List;
-
-
-
 /**
  * Interface to represent a Client
  * 
@@ -28,20 +24,20 @@ public interface IClient extends Runnable
 	
 	/**
 	 * Updates the user list
+	 * @param roomID The room 's id of the asked list
 	 * @return Whether the user list have been updated well
 	 */
-	public void askClientsList();
+	public void askClientsList(String roomID);
 	
 	/**
-	 * Sends a private message to the given receivers
-	 * @param clients The list of receivers
+	 * Sends a public message to the given room
 	 * @param message The message to send
 	 */
-	public void sendPrivateMessage(List<String> clients, String message);
+	public void sendMessage(String message, String roomID);
 	
 	/**
 	 * Sends a public message to everyone (broadcast)
 	 * @param message The message to send
 	 */
-	public void sendPublicMessage(String message);
+	public void sendMessage(String message);
 }

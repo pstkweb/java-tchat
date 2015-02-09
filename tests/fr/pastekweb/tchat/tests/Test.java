@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 
 import fr.pastekweb.tchat.client.DefaultClient;
 import fr.pastekweb.tchat.client.IClient;
+import fr.pastekweb.tchat.server.Server;
 
 /**
  * Test the communications between the server and clients
@@ -34,10 +35,10 @@ public class Test {
 		}
 		
 		// Récupération de la liste des utilisateurs
-		cl.askClientsList();
+		cl.askClientsList(Server.ROOM_PUBLIC_KEY);
 		
 		// Envoi d'un MSG
-		String msg = new BigInteger(130, new SecureRandom()).toString(32);
-		cl.sendPublicMessage(msg);
+		String msg = "Nouveau message";
+		cl.sendMessage(msg);
 	}
 }

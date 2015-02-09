@@ -5,13 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.net.Socket;
-import java.security.SecureRandom;
-import java.util.List;
 
 import fr.pastekweb.tchat.model.Tchat;
 import fr.pastekweb.tchat.server.Protocol;
+import fr.pastekweb.tchat.server.Server;
 
 /**
  * The default Client class
@@ -24,32 +22,22 @@ public class DefaultClient implements IClient
 	 * The socket connected to the Server
 	 */
 	private Socket socket;
-	
 	/**
 	 * The socket's writer
 	 */
 	private PrintWriter writer;
-	
 	/**
 	 * The socket's reader
 	 */
 	private BufferedReader reader;
-	
 	/**
 	 * The tchat model
 	 */
 	private Tchat tchat;
-	
-	/**
-	 * The client pseudo
-	 */
-	private String pseudo;
-	
 	/**
 	 * Whether the client is connected
 	 */
 	private boolean connected;
-	
 	/**
 	 * Boolean whether the client is alive or not
 	 */
@@ -86,15 +74,12 @@ public class DefaultClient implements IClient
 	@Override
 	public boolean connect(String pseudo)
 	{
-		System.out.println("Send: "+Protocol.CONNECT);
-		System.out.println("Pseudo: <"+pseudo+">");
 		send(Protocol.CONNECT);
-		this.pseudo = pseudo;
-		send(pseudo);
+		tchat.setPseudo(pseudo);
+		send(tchat.getUsername());
 		
 		synchronized (this) {
 			try {
-				System.out.println("Waiting for server");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -110,12 +95,18 @@ public class DefaultClient implements IClient
 	}
 
 	@Override
-	public void askClientsList()
+	public void askClientsList(String roomID)
 	{
-		System.out.println("Send: "+Protocol.USERS_LIST);
 		send(Protocol.USERS_LIST);
+		send(roomID);
 		
-		System.out.println("Waiting for server");
+		synchronized (this) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -124,18 +115,19 @@ public class DefaultClient implements IClient
 	 */
 	private boolean receiveClientList()
 	{
-		System.out.println("User list");
 		try {
+			String roomID = reader.readLine();
 			String token = reader.readLine();
-			System.out.println("Token: "+token);
 			String pseudo;
 			
-			System.out.println("Add client :");
+			System.out.println("Room id: "+roomID);
+			System.out.println("Token: "+token);
+			
 			while (!(pseudo = reader.readLine()).equals(token)) {
-				System.out.println("- "+pseudo);
-				addClient(pseudo);
+				addClient(roomID, pseudo);
+				System.out.println("User: "+pseudo);
 			}
-			System.out.println("Token end: "+pseudo);
+			System.out.println("End token: "+pseudo);
 			
 			return true;
 		} catch (IOException e) {
@@ -151,8 +143,9 @@ public class DefaultClient implements IClient
 	private boolean receiveNewClient()
 	{
 		try {
-			String pseudo = reader.readLine();
-			tchat.addUser(pseudo);
+			String roomID = reader.readLine();
+			String username = reader.readLine();
+			addClient(roomID, username);
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
@@ -167,8 +160,9 @@ public class DefaultClient implements IClient
 	private boolean receiveClientLeft()
 	{
 		try {
-			String pseudo = reader.readLine();
-			tchat.removeUser(pseudo);
+			String roomID = reader.readLine();
+			String username = reader.readLine();
+			removeClient(roomID, username);
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
@@ -180,70 +174,54 @@ public class DefaultClient implements IClient
 	 * Adds a client to the clients list
 	 * @param pseudo The client pseudo
 	 */
-	public void addClient(String pseudo)
+	public void addClient(String roomID, String pseudo)
 	{
-		tchat.addUser(pseudo);
+		tchat.addUser(roomID, pseudo);
 	}
 
 	/**
 	 * Removes a client from the clients list
 	 * @param pseudo The client pseudo
 	 */
-	public void removeClient(String pseudo)
+	public void removeClient(String roomID, String pseudo)
 	{
-		tchat.removeUser(pseudo);
-	}
-	
-	@Override
-	public void sendPrivateMessage(List<String> clients, String message)
-	{
-		send(Protocol.SEND_MP);
-		String token = new BigInteger(130, new SecureRandom()).toString(32);
-		send(token);
-		for (String client: clients) {
-			send(client);
-		}
-		send(token);
+		tchat.removeUser(roomID, pseudo);
 	}
 
 	@Override
-	public void sendPublicMessage(String message)
+	public void sendMessage(String message, String roomID)
 	{
 		send(Protocol.SEND_MSG);
+		send(roomID);
 		send(message);
+
+		System.out.println("-------------------");
+		System.out.println("Send protocol: "+Protocol.SEND_MSG);
+		System.out.println("Room id: "+roomID);
+		System.out.println("Message: "+message);
+	}
+	
+	@Override
+	public void sendMessage(String message)
+	{
+		sendMessage(message, Server.ROOM_PUBLIC_KEY);
 	}
 	
 	/**
 	 * Receives a private message
 	 * @return boolean whether the message have been well received
 	 */
-	private boolean receivePrivateMessage()
+	private boolean receiveMessage()
 	{
 		try {
+			String roomID = reader.readLine();
 			String from = reader.readLine();
 			String message = reader.readLine();
 			
-			System.out.println("Private message from "+from+": "+message);
-			// TODO: handle the reception
+			System.out.println("Room id: "+roomID);
+			System.out.println("From: "+from);
+			System.out.println("Message: "+message);
 			
-			return true;
-		} catch (IOException e) {
-			System.out.println("Stream reading error: "+e.getMessage());
-		}
-		return false;
-	}
-	
-	/**
-	 * Receives a private message
-	 * @return boolean whether the message have been well received
-	 */
-	private boolean receivePublicMessage()
-	{
-		try {
-			String from = reader.readLine();
-			String message = reader.readLine();
-			
-			System.out.println("Public message from "+from+": "+message);
 			// TODO: handle the reception
 			
 			return true;
@@ -270,34 +248,36 @@ public class DefaultClient implements IClient
 		while (isAlive) {
 			try {
 				String message = reader.readLine();
-				System.out.println("----------------------------");
-				System.out.println("msg: "+message);
-				System.out.println("proto: "+Protocol.createProtocol(message));
+				System.out.println("-------------------");
+				System.out.println("Protocol: "+message);
 				switch (Protocol.createProtocol(message)) {
 					case CONNECT_OK:
 						connected = true;
-						// TODO: remove log
-						System.out.println("Logged in as: "+pseudo);
 						synchronized (this) { notify(); }
 						break;
+						
 					case CONNECT_KO:
 						connected = false;
 						synchronized (this) { notify(); }
 						break;
+						
 					case USERS_LIST:
 						receiveClientList();
+						synchronized (this) { notify(); }
+						break;
+						
 					case NEW_USER:
 						receiveNewClient();
 						break;
+						
 					case USER_LEAVE:
 						receiveClientLeft();
 						break;
-					case RECEIVE_MP:
-						receivePrivateMessage();
-						break;
+					
 					case RECEIVE_MSG:
-						receivePublicMessage();
+						receiveMessage();
 						break;
+						
 					default:
 						break;
 				}

@@ -1,8 +1,11 @@
 package fr.pastekweb.tchat.model;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import fr.pastekweb.tchat.event.DefaultObservable;
+import fr.pastekweb.tchat.server.Server;
 
 /**
  * The model that represents the Tchat
@@ -10,44 +13,98 @@ import fr.pastekweb.tchat.event.DefaultObservable;
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
 public class Tchat extends DefaultObservable
-{
+{	
 	/**
-	 * The list of connected users
+	 * The user 's pseudo
 	 */
-	private ArrayList<String> users;
-
+	private String username;
 	/**
-	 * Initialize the Tchat
+	 * The Map of the tchat rooms
+	 */
+	private HashMap<String, Room> rooms;
+	
+	/**
+	 * Initialize the Tchat with the default public room
 	 */
 	public Tchat()
 	{
-		users = new ArrayList<>();
-	}
-
-	/**
-	 * Adds a user to the users list
-	 * @param username The user 's name
-	 */
-	public void addUser(String username)
-	{
-		users.add(username);
+		rooms = new HashMap<>();
+		rooms.put(Server.ROOM_PUBLIC_KEY, new Room());
 	}
 	
 	/**
-	 * Removes a user from the users list
-	 * @param username The user 's name
+	 * Sets the user pseudo
+	 * @param username The user pseudo
 	 */
-	public void removeUser(String username)
+	public void setPseudo(String username)
 	{
-		users.remove(username);
+		this.username = username;
 	}
 	
 	/**
-	 * Gets the list of users
-	 * @return The ArrayList of users
+	 * Gets the user pseudo
+	 * @return The user name
 	 */
-	public ArrayList<String> getUsers()
+	public String getUsername() 
 	{
-		return users;
+		return username;
+	}
+	
+	/**
+	 * Adds a {@link Room} to the list of rooms
+	 * @param room The {@link Room} to add
+	 */
+	public void addRoom(String roomID, Room room)
+	{
+		rooms.put(roomID, room);
+	}
+	
+	/**
+	 * Removes a {@link Room} from the list of rooms
+	 * @param room The {@link Room} to remove
+	 */
+	public void removeRoom(String roomID)
+	{
+		rooms.remove(roomID);
+	}
+	
+	/**
+	 * Gets the list of rooms
+	 * @return The ArrayList of {@link Room}
+	 */
+	public HashMap<String, Room> getRooms()
+	{
+		return rooms;
+	}
+	
+	/**
+	 * Adds a user to the given room
+	 * @param roomID The id of the room
+	 * @param username The pseudo of the user
+	 */
+	public void addUser(String roomID, String username)
+	{
+		rooms.get(roomID).addUser(username);
+	}
+	
+	/**
+	 * Removes a user from the given room.
+	 * If the given room is the public room, also remove the user
+	 * from the other rooms
+	 * @param roomID The room id
+	 * @param username The user name
+	 */
+	public void removeUser(String roomID, String username)
+	{
+		rooms.get(roomID).removeUser(username);
+		
+		// If the user left the public room, he must left the other rooms
+		if (roomID == Server.ROOM_PUBLIC_KEY) {
+			Iterator<Entry<String, Room>> it = rooms.entrySet().iterator();
+			while (it.hasNext()) {
+				Room room = it.next().getValue();
+				room.removeUser(username);
+			}
+		}
 	}
 }
