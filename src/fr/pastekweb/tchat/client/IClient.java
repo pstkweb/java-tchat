@@ -31,12 +31,6 @@ public interface IClient extends Runnable
 	public void askClientsList();
 	
 	/**
-	 * Gets the clients list
-	 * @return The clients list
-	 */
-	public List<String> getClients();
-	
-	/**
 	 * Sends a private message to the given receivers
 	 * @param clients The list of receivers
 	 * @param message The message to send

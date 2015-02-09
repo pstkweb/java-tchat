@@ -8,9 +8,9 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.List;
 
+import fr.pastekweb.tchat.model.Tchat;
 import fr.pastekweb.tchat.server.Protocol;
 
 /**
@@ -36,9 +36,9 @@ public class DefaultClient implements IClient
 	private BufferedReader reader;
 	
 	/**
-	 * The clients list
+	 * The tchat model
 	 */
-	private ArrayList<String> clients;
+	private Tchat tchat;
 	
 	/**
 	 * The client pseudo
@@ -73,7 +73,7 @@ public class DefaultClient implements IClient
 	{
 		this.connected = false;
 		this.isAlive = true;
-		this.clients = new ArrayList<>();
+		this.tchat = new Tchat();
 		try {
 			socket = new Socket("127.0.0.1", port);	
 			writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -152,7 +152,7 @@ public class DefaultClient implements IClient
 	{
 		try {
 			String pseudo = reader.readLine();
-			clients.add(pseudo);
+			tchat.addUser(pseudo);
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
@@ -168,7 +168,7 @@ public class DefaultClient implements IClient
 	{
 		try {
 			String pseudo = reader.readLine();
-			clients.remove(pseudo);
+			tchat.removeUser(pseudo);
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
@@ -182,7 +182,7 @@ public class DefaultClient implements IClient
 	 */
 	public void addClient(String pseudo)
 	{
-		clients.add(pseudo);
+		tchat.addUser(pseudo);
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class DefaultClient implements IClient
 	 */
 	public void removeClient(String pseudo)
 	{
-		clients.remove(pseudo);
+		tchat.removeUser(pseudo);
 	}
 	
 	@Override
@@ -254,15 +254,6 @@ public class DefaultClient implements IClient
 	}
 
 	/**
-	 * Gets the list of clients
-	 * @return The list of clients
-	 */
-	public List<String> getClients()
-	{
-		return clients;
-	}
-
-	/**
 	 * Sends a message through the socket writer
 	 * and ensures that the message is well flushed
 	 * @param message The message to send
@@ -317,6 +308,4 @@ public class DefaultClient implements IClient
 			}
 		}
 	}
-
-	
 }
