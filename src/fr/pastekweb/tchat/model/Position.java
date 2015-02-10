@@ -1,4 +1,4 @@
-package fr.pastekweb.tchat.server;
+package fr.pastekweb.tchat.model;
 
 import java.awt.Point;
 

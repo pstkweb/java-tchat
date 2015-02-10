@@ -11,6 +11,8 @@ import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Map;
 
+import fr.pastekweb.tchat.model.Position;
+
 /**
  * The client thread used by the server
  * 
@@ -216,7 +218,7 @@ public class ClientHandler implements Runnable {
 			ClientHandler client = destIt.next().getValue();
 			
 			System.out.println("Send: "+Protocol.RECEIVE_POS+" to ["+client.getName()+"]");
-			client.send(Protocol.RECEIVE_POS.toString());
+			client.send(Protocol.RECEIVE_POS);
 			System.out.println("from: "+username);
 			client.send(username);
 			System.out.println("position: "+position);
@@ -241,6 +243,7 @@ public class ClientHandler implements Runnable {
 	public void sendPosition(Position pos, String roomID) {
 		send(Protocol.RECEIVE_POS);
 		send(roomID);
+		send(username);
 		send(pos.toString());
 	}
 	

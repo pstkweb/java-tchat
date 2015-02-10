@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.model.Tchat;
 import fr.pastekweb.tchat.server.Protocol;
 import fr.pastekweb.tchat.server.Server;
@@ -108,6 +109,54 @@ public class DefaultClient implements IClient
 			}
 		}
 	}
+
+	/**
+	 * Adds a client to the clients list
+	 * @param pseudo The client pseudo
+	 */
+	public void addClient(String roomID, String pseudo)
+	{
+		tchat.addUser(roomID, pseudo);
+	}
+
+	/**
+	 * Removes a client from the clients list
+	 * @param pseudo The client pseudo
+	 */
+	public void removeClient(String roomID, String pseudo)
+	{
+		tchat.removeUser(roomID, pseudo);
+	}
+
+	@Override
+	public void sendMessage(String message, String roomID)
+	{
+		send(Protocol.SEND_MSG);
+		send(roomID);
+		send(message);
+
+		System.out.println("-------------------");
+		System.out.println("Send protocol: "+Protocol.SEND_MSG);
+		System.out.println("Room id: "+roomID);
+		System.out.println("Message: "+message);
+	}
+	
+	@Override
+	public void sendMessage(String message)
+	{
+		sendMessage(message, Server.ROOM_PUBLIC_KEY);
+	}
+
+	/**
+	 * Sends a message through the socket writer
+	 * and ensures that the message is well flushed
+	 * @param message The message to send
+	 */
+	private void send(Object message)
+	{
+		writer.println(message);
+		writer.flush();
+	}
 	
 	/**
 	 * Receives the client list
@@ -169,43 +218,6 @@ public class DefaultClient implements IClient
 		}
 		return false;
 	}
-
-	/**
-	 * Adds a client to the clients list
-	 * @param pseudo The client pseudo
-	 */
-	public void addClient(String roomID, String pseudo)
-	{
-		tchat.addUser(roomID, pseudo);
-	}
-
-	/**
-	 * Removes a client from the clients list
-	 * @param pseudo The client pseudo
-	 */
-	public void removeClient(String roomID, String pseudo)
-	{
-		tchat.removeUser(roomID, pseudo);
-	}
-
-	@Override
-	public void sendMessage(String message, String roomID)
-	{
-		send(Protocol.SEND_MSG);
-		send(roomID);
-		send(message);
-
-		System.out.println("-------------------");
-		System.out.println("Send protocol: "+Protocol.SEND_MSG);
-		System.out.println("Room id: "+roomID);
-		System.out.println("Message: "+message);
-	}
-	
-	@Override
-	public void sendMessage(String message)
-	{
-		sendMessage(message, Server.ROOM_PUBLIC_KEY);
-	}
 	
 	/**
 	 * Receives a private message
@@ -230,16 +242,31 @@ public class DefaultClient implements IClient
 		}
 		return false;
 	}
-
+	
 	/**
-	 * Sends a message through the socket writer
-	 * and ensures that the message is well flushed
-	 * @param message The message to send
+	 * 
+	 * @return
 	 */
-	private void send(Object message)
+	private boolean receivePosition()
 	{
-		writer.println(message);
-		writer.flush();
+		try {
+			String roomID = reader.readLine();
+			String from = reader.readLine();
+			String pos = reader.readLine();
+			String[] coordinates = pos.split(":");
+			
+			Position position = new Position(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
+			
+			System.out.println("Room id: "+roomID);
+			System.out.println("From: "+from);
+			System.out.println("Position: "+position.toString());
+			
+			return true;
+		} catch (IOException e) {
+			System.out.println("Stream reading error: "+e.getMessage());
+		}
+		
+		return false;
 	}
 
 	@Override
@@ -276,6 +303,10 @@ public class DefaultClient implements IClient
 					
 					case RECEIVE_MSG:
 						receiveMessage();
+						break;
+						
+					case RECEIVE_POS:
+						receivePosition();
 						break;
 						
 					default:

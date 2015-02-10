@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import fr.pastekweb.tchat.model.Position;
+
 /**
  * Server main class
  * 
@@ -138,13 +140,13 @@ public class Server
 	
 	/**
 	 * Add a client to given room.
-	 * @param pseudo The pseudo of the client
+	 * @param username The pseudo of the client
 	 * @param client The client thread using the given pseudo
 	 * @param roomID The room id
 	 */
-	private void addClientToRoom(String pseudo, ClientHandler client, String roomID)
+	private void addClientToRoom(String username, ClientHandler client, String roomID)
 	{
-		rooms.get(roomID).put(pseudo, client);
+		rooms.get(roomID).put(username, client);
 		client.setPosition(new Position(0, 0));
 
 		// Notify all clients of a new user, except the new one
@@ -152,10 +154,10 @@ public class Server
 		while (it.hasNext()) {
 			Map.Entry<String, ClientHandler> clientTo = (Entry<String, ClientHandler>) it.next();
 			
-			if (!pseudo.equals(clientTo.getKey())) {
-				clientTo.getValue().sendNewUser(pseudo, roomID);
+			if (!username.equals(clientTo.getKey())) {
+				clientTo.getValue().sendNewUser(username, roomID);
 				
-				clientTo.getValue().sendPosition(rooms.get(roomID).get(pseudo).getPosition(), roomID);
+				clientTo.getValue().sendPosition(rooms.get(roomID).get(username).getPosition(), roomID);
 			}
 		}
 	}
