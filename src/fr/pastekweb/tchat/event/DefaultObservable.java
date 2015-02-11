@@ -4,8 +4,8 @@ import java.util.HashSet;
 
 /**
  * The DefaultObservable class implementation.
- * 
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
+ * 
  */
 public abstract class DefaultObservable implements IObservable
 {
@@ -35,32 +35,22 @@ public abstract class DefaultObservable implements IObservable
 	}
 	
 	/**
-	 * Notify the listener that the user list have changed
+	 * Notify listener that there's a new message
 	 */
-	public void notifyUserListChanged()
+	public void notifyHasNewMessage()
 	{
 		for (IListener listener : listeners) {
-			listener.userListChanged(this);
+			listener.hasNewMessage(this);
 		}
 	}
 	
 	/**
-	 * Notify the listener that there's a new public message
+	 * Notify listeners that users' positions have changed
 	 */
-	public void notifyHasNewPublicMessage()
+	public void notifyPositionsChanged()
 	{
 		for (IListener listener : listeners) {
-			listener.hasNewPublicMessage(this);
-		}
-	}
-	
-	/**
-	 * Notify the listener that there's a new private message
-	 */
-	public void notifyHasNewPrivateMessage()
-	{
-		for (IListener listener : listeners) {
-			listener.hasNewPrivateMessage(this);
+			listener.positionsChanged(this);
 		}
 	}
 }

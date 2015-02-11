@@ -1,5 +1,7 @@
 package fr.pastekweb.tchat.client;
 
+import fr.pastekweb.tchat.model.Tchat;
+
 /**
  * Interface to represent a Client
  * 
@@ -40,4 +42,10 @@ public interface IClient extends Runnable
 	 * @param message The message to send
 	 */
 	public void sendMessage(String message);
+	
+	/**
+	 * Return the tchat model
+	 * @return The {@link Tchat}
+	 */
+	public Tchat getTchat();
 }

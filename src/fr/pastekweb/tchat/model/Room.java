@@ -1,18 +1,24 @@
 package fr.pastekweb.tchat.model;
 
-import java.util.ArrayList;
-
+/**
+ * Class to represent a Tchat Room
+ * 
+ * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
+ */
 public class Room
 {
 
 	/**
 	 * The list of connected users
 	 */
-	private ArrayList<String> users;
+	private UserList users;
 	
+	/**
+	 * Initialize the room
+	 */
 	public Room()
 	{
-		users = new ArrayList<>();
+		users = new UserList();
 	}
 
 	/**
@@ -21,7 +27,7 @@ public class Room
 	 */
 	public void addUser(String username)
 	{
-		users.add(username);
+		users.addUser(username);
 	}
 	
 	/**
@@ -30,14 +36,14 @@ public class Room
 	 */
 	public void removeUser(String username)
 	{
-		users.remove(username);
+		users.removeUser(username);
 	}
 	
 	/**
 	 * Gets the list of users
 	 * @return The ArrayList of users
 	 */
-	public ArrayList<String> getUsers()
+	public UserList getUsers()
 	{
 		return users;
 	}

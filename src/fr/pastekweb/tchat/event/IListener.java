@@ -6,22 +6,16 @@ package fr.pastekweb.tchat.event;
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
 public interface IListener
-{
+{	
 	/**
-	 * Notify the listener that the user list has changed
+	 * Notify that listener that the model has a new private message
 	 * @param model The {@link IObservable} model
 	 */
-	public void userListChanged(IObservable model);
+	public void hasNewMessage(IObservable model);
 	
 	/**
-	 * Notify the listener that the model has a new private message
+	 * Notify that listener that the clients positions have changed 
 	 * @param model The {@link IObservable} model
 	 */
-	public void hasNewPrivateMessage(IObservable model);
-	
-	/**
-	 * Notify the listener that the model has a new public message
-	 * @param model The {@link IObservable} model
-	 */
-	public void hasNewPublicMessage(IObservable model);
+	public void positionsChanged(IObservable model);
 }

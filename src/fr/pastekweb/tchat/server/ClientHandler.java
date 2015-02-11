@@ -8,8 +8,10 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import fr.pastekweb.tchat.model.Position;
 
@@ -106,6 +108,10 @@ public class ClientHandler implements Runnable {
 				}
 			} catch (IOException e) {
 				System.out.println("Erreur d'E/S : " + e.getMessage());
+			} catch(NullPointerException e) {
+				// Means that the client left the application
+				notifyUserLeft(Server.ROOM_PUBLIC_KEY);
+				isAlive = false;
 			}
 		}
 	}
@@ -155,6 +161,48 @@ public class ClientHandler implements Runnable {
 	}
 	
 	/**
+	 * Notify others clients handler that the user left
+	 */
+	private void notifyUserLeft(String roomID)
+	{
+		HashMap<String, ClientHandler> clients = server.getRooms().get(roomID);
+		
+		// Notify others clients connected to this room that the user left
+		Iterator<Entry<String, ClientHandler>> clientIt = clients.entrySet().iterator();
+		while (clientIt.hasNext()) {
+			Entry<String, ClientHandler> client = clientIt.next();
+			String username = client.getKey();
+			ClientHandler handler = client.getValue();
+			if (this.username != username) {
+				handler.sendUserLeft(roomID, this.username);
+			}
+		}
+		
+		/* 
+		 * If the concerned room is the public room
+		 * removes this user from all other rooms
+		 */
+		if (roomID == Server.ROOM_PUBLIC_KEY) {
+			Iterator<Entry<String, HashMap<String, ClientHandler>>> roomsIt = server.getRooms().entrySet().iterator();
+			while (roomsIt.hasNext()) {
+				roomsIt.next().getValue().remove(this.username);
+			}
+		}
+	}
+	
+	/**
+	 * Notify the client that a user left a room
+	 * @param roomID 
+	 * @param username
+	 */
+	private void sendUserLeft(String roomID, String username)
+	{
+		send(Protocol.USER_LEAVE);
+		send(roomID);
+		send(username);
+	}
+	
+	/**
 	 * Sends a message
 	 * @throws IOException Whether an input/output error occurs
 	 */
@@ -178,7 +226,7 @@ public class ClientHandler implements Runnable {
 	}
 	
 	/**
-	 * Sends the list of the 
+	 * Sends the list of the users position
 	 */
 	private void sendPositionsList()
 	{

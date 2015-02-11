@@ -98,6 +98,15 @@ public class Server
 	}
 	
 	/**
+	 * Gets the list of the rooms
+	 * @return The list of the rooms
+	 */
+	public HashMap<String, HashMap<String, ClientHandler>> getRooms()
+	{
+		return rooms;
+	}
+	
+	/**
 	 * Get a client by its pseudo
 	 * @param pseudo The pseudo to find
 	 * @return The client thread using this pseudo

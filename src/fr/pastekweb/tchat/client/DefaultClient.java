@@ -19,6 +19,9 @@ import fr.pastekweb.tchat.server.Server;
  */
 public class DefaultClient implements IClient
 {	
+	private static final String DEFAULT_IP = "127.0.0.1";
+	private static final int DEFAULT_PORT = 1337;
+	
 	/**
 	 * The socket connected to the Server
 	 */
@@ -45,12 +48,23 @@ public class DefaultClient implements IClient
 	private boolean isAlive;
 	
 	/**
-	 * Creates an instance of Client with a
-	 * default port (1337)
+	 * Creates an instance of Client with the default configuration:
+	 * IP => 127.0.0.1
+	 * PORT => 1337
 	 */
 	public DefaultClient()
 	{
-		this(1337);
+		this(DEFAULT_IP);
+	}
+	
+	/**
+	 * Creates an instance of the Client with the default port
+	 * PORT => 1337
+	 * @param ip The IP address
+	 */
+	public DefaultClient(String ip)
+	{
+		this(ip, DEFAULT_PORT);
 	}
 	
 	/**
@@ -58,18 +72,26 @@ public class DefaultClient implements IClient
 	 * the given port
 	 * @param port The port to use
 	 */
-	public DefaultClient(int port)
+	public DefaultClient(String ip, int port)
 	{
 		this.connected = false;
 		this.isAlive = true;
 		this.tchat = new Tchat();
 		try {
-			socket = new Socket("127.0.0.1", port);	
+			socket = new Socket(ip, port);	
 			writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
 			System.out.println("Input/Output error : " + e.getMessage());
 		}
+	}
+	
+
+
+	@Override
+	public Tchat getTchat()
+	{
+		return tchat;
 	}
 
 	@Override

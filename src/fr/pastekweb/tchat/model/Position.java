@@ -4,8 +4,8 @@ import java.awt.Point;
 
 /**
  * The client position in a Cartesian plan
+ * 
  * @author Thomas TRIBOULT
- *
  */
 public class Position extends Point {
 	/**
