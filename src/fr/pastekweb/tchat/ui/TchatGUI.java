@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 
 import javax.swing.JPanel;
 
-import fr.pastekweb.tchat.client.DefaultClient;
 import fr.pastekweb.tchat.client.IClient;
 import fr.pastekweb.tchat.model.Room;
 import fr.pastekweb.tchat.server.Server;
@@ -37,9 +36,9 @@ public class TchatGUI
 	/**
 	 * Initialize the GUI
 	 */
-	public TchatGUI()
+	public TchatGUI(IClient client)
 	{
-		client = new DefaultClient();
+		this.client = client;
 		view = new JPanel();
 		roomViews = new HashMap<>();
 		
@@ -50,15 +49,7 @@ public class TchatGUI
 			roomViews.put(entry.getKey(), new RoomView(entry.getValue()));
 		}
 		
-		startClient();
 		createView();
-	}
-	
-	private void startClient()
-	{
-		new Thread(client).start();
-		client.connect("Toto");
-		client.askClientsList(Server.ROOM_PUBLIC_KEY);
 	}
 		
 	/**
@@ -79,4 +70,12 @@ public class TchatGUI
 		return view;
 	}
 
+	/**
+	 * Gets the client
+	 * @return The {@link IClient}
+	 */
+	public IClient getClient()
+	{
+		return client;
+	}
 }

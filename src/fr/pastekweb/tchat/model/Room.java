@@ -1,13 +1,14 @@
 package fr.pastekweb.tchat.model;
 
+import fr.pastekweb.tchat.event.DefaultObservable;
+
 /**
  * Class to represent a Tchat Room
  * 
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
-public class Room
-{
-
+public class Room extends DefaultObservable
+{ 	
 	/**
 	 * The list of connected users
 	 */
@@ -47,4 +48,16 @@ public class Room
 	{
 		return users;
 	}
+	
+	/**
+	 * 
+	 * @param from
+	 * @param message
+	 */
+	public void newMessage(String from, String message)
+	{
+		notifyHasNewMessage(from, message);
+	}
+	
+	
 }

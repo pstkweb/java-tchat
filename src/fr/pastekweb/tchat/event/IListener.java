@@ -11,7 +11,7 @@ public interface IListener
 	 * Notify that listener that the model has a new private message
 	 * @param model The {@link IObservable} model
 	 */
-	public void hasNewMessage(IObservable model);
+	public void hasNewMessage(String from, String message);
 	
 	/**
 	 * Notify that listener that the clients positions have changed 

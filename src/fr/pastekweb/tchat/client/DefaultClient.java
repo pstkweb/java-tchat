@@ -256,7 +256,7 @@ public class DefaultClient implements IClient
 			System.out.println("From: "+from);
 			System.out.println("Message: "+message);
 			
-			// TODO: handle the reception
+			tchat.addMessage(roomID, from, message);
 			
 			return true;
 		} catch (IOException e) {

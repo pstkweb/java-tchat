@@ -37,10 +37,10 @@ public abstract class DefaultObservable implements IObservable
 	/**
 	 * Notify listener that there's a new message
 	 */
-	public void notifyHasNewMessage()
+	public void notifyHasNewMessage(String from, String message)
 	{
 		for (IListener listener : listeners) {
-			listener.hasNewMessage(this);
+			listener.hasNewMessage(from, message);
 		}
 	}
 	

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import fr.pastekweb.tchat.event.DefaultObservable;
 import fr.pastekweb.tchat.server.Server;
 
 /**
@@ -12,7 +11,7 @@ import fr.pastekweb.tchat.server.Server;
  * 
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
-public class Tchat extends DefaultObservable
+public class Tchat
 {	
 	/**
 	 * The user 's pseudo
@@ -85,6 +84,17 @@ public class Tchat extends DefaultObservable
 	public void addUser(String roomID, String username)
 	{
 		rooms.get(roomID).addUser(username);
+	}
+	
+	/**
+	 * Adds a new message to the tchat
+	 * @param roomID The room's id
+	 * @param from The user who sent the message
+	 * @param message The message
+	 */
+	public void addMessage(String roomID, String from, String message)
+	{
+		rooms.get(roomID).newMessage(from, message);
 	}
 	
 	/**

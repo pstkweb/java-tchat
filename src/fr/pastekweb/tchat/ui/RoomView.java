@@ -1,6 +1,7 @@
 package fr.pastekweb.tchat.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -8,7 +9,6 @@ import javax.swing.JPanel;
 import fr.pastekweb.tchat.event.IListener;
 import fr.pastekweb.tchat.event.IObservable;
 import fr.pastekweb.tchat.model.Room;
-import fr.pastekweb.tchat.model.UserList;
 
 /**
  * The {@link Room} view
@@ -28,6 +28,10 @@ public class RoomView extends JPanel implements IListener
 	 * The user list
 	 */
 	private JList<String> userList;
+	/**
+	 * The messages view
+	 */
+	private MessagesView messagesView;
 	
 	/**
 	 * Initialize the {@link Room} view
@@ -35,11 +39,13 @@ public class RoomView extends JPanel implements IListener
 	 */
 	public RoomView(Room room)
 	{
-		super();
+		super(new BorderLayout());
 		this.room = room;
+		this.room.addListener(this);
 		
 		userList = new JList<>();
 		userList.setModel(room.getUsers());
+		messagesView = new MessagesView();
 		
 		createView();
 	}
@@ -49,15 +55,15 @@ public class RoomView extends JPanel implements IListener
 	 */
 	private void createView()
 	{
-		this.setLayout(new BorderLayout());
+		userList.setPreferredSize(new Dimension(100, 400));
 		this.add(userList, BorderLayout.WEST);
+		this.add(messagesView, BorderLayout.CENTER);
 	}
 
 	@Override
-	public void hasNewMessage(IObservable model)
+	public void hasNewMessage(String from, String message)
 	{
-		// TODO Auto-generated method stub
-		
+		this.messagesView.addMessage(from, message);
 	}
 
 	@Override
