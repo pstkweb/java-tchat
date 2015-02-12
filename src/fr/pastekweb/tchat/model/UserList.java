@@ -16,7 +16,7 @@ public class UserList extends AbstractListModel<String>
 	/**
 	 * The list of users
 	 */
-	private ArrayList<String> users;
+	private ArrayList<User> users;
 	
 	/**
 	 * Initialize the user list with empty list
@@ -28,23 +28,32 @@ public class UserList extends AbstractListModel<String>
 	
 	/**
 	 * Adds a user to the list
-	 * @param username The username to add
+	 * @param user The user to add
 	 */
-	public void addUser(String username)
+	public void addUser(User user)
 	{
-		users.add(username);
+		users.add(user);
 		fireContentsChanged(this, getSize(), getSize()+1);
 	}
 	
 	/**
 	 * Removes a user from the list
-	 * @param username The username to remove
+	 * @param username The user to remove
 	 */
-	public void removeUser(String username)
+	public void removeUser(User user)
 	{
 		// int index = users.indexOf(username);
-		users.remove(username);
+		users.remove(user);
 		fireContentsChanged(this, 0, getSize());
+	}
+	
+	/**
+	 * Get the list of users
+	 * @return The list of users
+	 */
+	public ArrayList<User> getList()
+	{
+		return users;
 	}
 	
 	@Override
@@ -56,6 +65,6 @@ public class UserList extends AbstractListModel<String>
 	@Override
 	public String getElementAt(int index)
 	{
-		return users.get(index);
+		return users.get(index).toString();
 	}
 }

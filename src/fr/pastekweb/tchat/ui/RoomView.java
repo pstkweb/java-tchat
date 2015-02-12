@@ -32,6 +32,10 @@ public class RoomView extends JPanel implements IListener
 	 * The messages view
 	 */
 	private MessagesView messagesView;
+	/**
+	 * The connected users map
+	 */
+	private MapView mapView;
 	
 	/**
 	 * Initialize the {@link Room} view
@@ -45,7 +49,11 @@ public class RoomView extends JPanel implements IListener
 		
 		userList = new JList<>();
 		userList.setModel(room.getUsers());
+		
 		messagesView = new MessagesView();
+		
+		mapView = new MapView();
+		mapView.setModel(room.getUsers());
 		
 		createView();
 	}
@@ -57,7 +65,11 @@ public class RoomView extends JPanel implements IListener
 	{
 		userList.setPreferredSize(new Dimension(100, 400));
 		this.add(userList, BorderLayout.WEST);
+		
 		this.add(messagesView, BorderLayout.CENTER);
+		
+		mapView.setPreferredSize(new Dimension(200, 200));
+		this.add(mapView, BorderLayout.EAST);
 	}
 
 	@Override

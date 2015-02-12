@@ -79,11 +79,11 @@ public class Tchat
 	/**
 	 * Adds a user to the given room
 	 * @param roomID The id of the room
-	 * @param username The pseudo of the user
+	 * @param user The user
 	 */
-	public void addUser(String roomID, String username)
+	public void addUser(String roomID, User user)
 	{
-		rooms.get(roomID).addUser(username);
+		rooms.get(roomID).addUser(user);
 	}
 	
 	/**
@@ -102,18 +102,18 @@ public class Tchat
 	 * If the given room is the public room, also remove the user
 	 * from the other rooms
 	 * @param roomID The room id
-	 * @param username The user name
+	 * @param user The user
 	 */
-	public void removeUser(String roomID, String username)
+	public void removeUser(String roomID, User user)
 	{
-		rooms.get(roomID).removeUser(username);
+		rooms.get(roomID).removeUser(user);
 		
 		// If the user left the public room, he must left the other rooms
 		if (roomID == Server.ROOM_PUBLIC_KEY) {
 			Iterator<Entry<String, Room>> it = rooms.entrySet().iterator();
 			while (it.hasNext()) {
 				Room room = it.next().getValue();
-				room.removeUser(username);
+				room.removeUser(user);
 			}
 		}
 	}

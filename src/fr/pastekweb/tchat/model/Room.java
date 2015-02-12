@@ -1,5 +1,6 @@
 package fr.pastekweb.tchat.model;
 
+
 import fr.pastekweb.tchat.event.DefaultObservable;
 
 /**
@@ -24,20 +25,20 @@ public class Room extends DefaultObservable
 
 	/**
 	 * Adds a user to the users list
-	 * @param username The user 's name
+	 * @param user The user to add
 	 */
-	public void addUser(String username)
+	public void addUser(User user)
 	{
-		users.addUser(username);
+		users.addUser(user);
 	}
 	
 	/**
 	 * Removes a user from the users list
-	 * @param username The user 's name
+	 * @param user The user to remove
 	 */
-	public void removeUser(String username)
+	public void removeUser(User user)
 	{
-		users.removeUser(username);
+		users.removeUser(user);
 	}
 	
 	/**

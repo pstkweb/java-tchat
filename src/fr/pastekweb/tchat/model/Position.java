@@ -1,6 +1,7 @@
 package fr.pastekweb.tchat.model;
 
 import java.awt.Point;
+import java.util.Random;
 
 /**
  * The client position in a Cartesian plan
@@ -29,5 +30,11 @@ public class Position extends Point {
 	 */
 	public String toString() {
 		return x + ":" + y;
+	}
+	
+	public static Position getRand(){
+		Random r = new Random();
+		
+		return new Position(r.nextInt(50), r.nextInt(50));
 	}
 }

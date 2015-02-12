@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.model.Tchat;
+import fr.pastekweb.tchat.model.User;
 import fr.pastekweb.tchat.server.Protocol;
 import fr.pastekweb.tchat.server.Server;
 
@@ -134,20 +135,20 @@ public class DefaultClient implements IClient
 
 	/**
 	 * Adds a client to the clients list
-	 * @param pseudo The client pseudo
+	 * @param user The client
 	 */
-	public void addClient(String roomID, String pseudo)
+	public void addClient(String roomID, User user)
 	{
-		tchat.addUser(roomID, pseudo);
+		tchat.addUser(roomID, user);
 	}
 
 	/**
 	 * Removes a client from the clients list
-	 * @param pseudo The client pseudo
+	 * @param user The client
 	 */
-	public void removeClient(String roomID, String pseudo)
+	public void removeClient(String roomID, User user)
 	{
-		tchat.removeUser(roomID, pseudo);
+		tchat.removeUser(roomID, user);
 	}
 
 	@Override
@@ -195,7 +196,7 @@ public class DefaultClient implements IClient
 			System.out.println("Token: "+token);
 			
 			while (!(pseudo = reader.readLine()).equals(token)) {
-				addClient(roomID, pseudo);
+				addClient(roomID, new User(pseudo));
 				System.out.println("User: "+pseudo);
 			}
 			System.out.println("End token: "+pseudo);
@@ -216,7 +217,7 @@ public class DefaultClient implements IClient
 		try {
 			String roomID = reader.readLine();
 			String username = reader.readLine();
-			addClient(roomID, username);
+			addClient(roomID, new User(username));
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
@@ -233,7 +234,7 @@ public class DefaultClient implements IClient
 		try {
 			String roomID = reader.readLine();
 			String username = reader.readLine();
-			removeClient(roomID, username);
+			removeClient(roomID, new User(username));
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
