@@ -1,7 +1,6 @@
 package fr.pastekweb.tchat.ui;
 
 import java.awt.BorderLayout;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

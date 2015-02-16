@@ -6,8 +6,7 @@ import java.awt.Dimension;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import fr.pastekweb.tchat.event.IListener;
-import fr.pastekweb.tchat.event.IObservable;
+import fr.pastekweb.tchat.event.IMessageListener;
 import fr.pastekweb.tchat.model.Room;
 
 /**
@@ -15,7 +14,7 @@ import fr.pastekweb.tchat.model.Room;
  * 
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
-public class RoomView extends JPanel implements IListener
+public class RoomView extends JPanel implements IMessageListener
 {
 	private static final long serialVersionUID = -4458295478133444427L;
 
@@ -45,7 +44,7 @@ public class RoomView extends JPanel implements IListener
 	{
 		super(new BorderLayout());
 		this.room = room;
-		this.room.addListener(this);
+		this.room.addMessageListener(this);
 		
 		userList = new JList<>();
 		userList.setModel(room.getUsers());
@@ -71,17 +70,19 @@ public class RoomView extends JPanel implements IListener
 		mapView.setPreferredSize(new Dimension(200, 200));
 		this.add(mapView, BorderLayout.EAST);
 	}
+	
+	/**
+	 * Gets the messages' view
+	 * @return The Messages View
+	 */
+	public MessagesView getMessagesView()
+	{
+		return messagesView;
+	}
 
 	@Override
 	public void hasNewMessage(String from, String message)
 	{
 		this.messagesView.addMessage(from, message);
-	}
-
-	@Override
-	public void positionsChanged(IObservable model)
-	{
-		// TODO Auto-generated method stub
-		
 	}
 }

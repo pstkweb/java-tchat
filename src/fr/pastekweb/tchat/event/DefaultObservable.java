@@ -4,34 +4,51 @@ import java.util.HashSet;
 
 /**
  * The DefaultObservable class implementation.
- * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  * 
+ * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
-public abstract class DefaultObservable implements IObservable
+public abstract class DefaultObservable implements IMessageObservable, IPositionsObservable
 {
 	/**
-	 * The HashSet of the Observable listeners
+	 * The HashSet of the message listeners
 	 */
-	private HashSet<IListener> listeners;
+	private HashSet<IMessageListener> messageListeners;
+	/**
+	 * The HashSet of the position listeners
+	 */
+	private HashSet<IPositionsListener> positionsListeners;
 
 	/**
 	 * Initialize the list of listeners
 	 */
 	public DefaultObservable()
 	{
-		listeners = new HashSet<>();
+		messageListeners = new HashSet<>();
+		positionsListeners = new HashSet<>();
 	}
 
 	@Override
-	public void addListener(IListener listener)
+	public void addMessageListener(IMessageListener listener)
 	{
-		listeners.add(listener);
+		messageListeners.add(listener);
 	}
 
 	@Override
-	public void removeListener(IListener listener)
+	public void removeMessageListener(IMessageListener listener)
 	{
-		listeners.remove(listener);
+		messageListeners.remove(listener);
+	}
+	
+	@Override
+	public void addPositionListener(IPositionsListener listener)
+	{
+		positionsListeners.add(listener);
+	}
+	
+	@Override
+	public void removePositionListener(IPositionsListener listener)
+	{
+		positionsListeners.remove(listener);
 	}
 	
 	/**
@@ -39,7 +56,7 @@ public abstract class DefaultObservable implements IObservable
 	 */
 	public void notifyHasNewMessage(String from, String message)
 	{
-		for (IListener listener : listeners) {
+		for (IMessageListener listener : messageListeners) {
 			listener.hasNewMessage(from, message);
 		}
 	}
@@ -49,7 +66,7 @@ public abstract class DefaultObservable implements IObservable
 	 */
 	public void notifyPositionsChanged()
 	{
-		for (IListener listener : listeners) {
+		for (IPositionsListener listener : positionsListeners) {
 			listener.positionsChanged(this);
 		}
 	}

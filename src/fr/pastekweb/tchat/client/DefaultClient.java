@@ -100,7 +100,7 @@ public class DefaultClient implements IClient
 	{
 		send(Protocol.CONNECT);
 		tchat.setPseudo(pseudo);
-		send(tchat.getUsername());
+		send(tchat.getUser().getPseudo());
 		
 		synchronized (this) {
 			try {

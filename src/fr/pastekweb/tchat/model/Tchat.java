@@ -16,7 +16,7 @@ public class Tchat
 	/**
 	 * The user 's pseudo
 	 */
-	private String username;
+	private User user;
 	/**
 	 * The Map of the tchat rooms
 	 */
@@ -29,6 +29,7 @@ public class Tchat
 	{
 		rooms = new HashMap<>();
 		rooms.put(Server.ROOM_PUBLIC_KEY, new Room());
+		user = new User();
 	}
 	
 	/**
@@ -37,16 +38,16 @@ public class Tchat
 	 */
 	public void setPseudo(String username)
 	{
-		this.username = username;
+		user.setPseudo(username);
 	}
 	
 	/**
 	 * Gets the user pseudo
 	 * @return The user name
 	 */
-	public String getUsername() 
+	public User getUser() 
 	{
-		return username;
+		return user;
 	}
 	
 	/**
