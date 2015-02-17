@@ -29,7 +29,7 @@ public class FrameTest
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		frame.setPreferredSize(new Dimension(600, 400));
+		frame.setPreferredSize(new Dimension(1000, 700));
 		
 		TchatGUI tchatGUI = new TchatGUI(client);
 		frame.add(tchatGUI.getView(), BorderLayout.CENTER);

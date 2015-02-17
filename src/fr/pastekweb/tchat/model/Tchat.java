@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import fr.pastekweb.tchat.event.DefaultRoomsObservable;
 import fr.pastekweb.tchat.server.Server;
 
 /**
@@ -11,7 +12,7 @@ import fr.pastekweb.tchat.server.Server;
  * 
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
-public class Tchat
+public class Tchat extends DefaultRoomsObservable
 {	
 	/**
 	 * The user 's pseudo
@@ -28,7 +29,7 @@ public class Tchat
 	public Tchat()
 	{
 		rooms = new HashMap<>();
-		rooms.put(Server.ROOM_PUBLIC_KEY, new Room());
+		rooms.put(Server.ROOM_PUBLIC_KEY, new Room(Server.ROOM_PUBLIC_KEY));
 		user = new User();
 	}
 	
@@ -54,18 +55,20 @@ public class Tchat
 	 * Adds a {@link Room} to the list of rooms
 	 * @param room The {@link Room} to add
 	 */
-	public void addRoom(String roomID, Room room)
+	public void addRoom(Room room)
 	{
-		rooms.put(roomID, room);
+		rooms.put(room.getId(), room);
+		notifyRoomsListHasChanged();
 	}
 	
 	/**
 	 * Removes a {@link Room} from the list of rooms
 	 * @param room The {@link Room} to remove
 	 */
-	public void removeRoom(String roomID)
+	public void removeRoom(Room room)
 	{
-		rooms.remove(roomID);
+		rooms.remove(room.getId());
+		notifyRoomsListHasChanged();
 	}
 	
 	/**

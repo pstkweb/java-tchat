@@ -1,8 +1,8 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import javax.swing.BoxLayout;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
@@ -42,7 +42,7 @@ public class RoomView extends JPanel implements IMessageListener
 	 */
 	public RoomView(Room room)
 	{
-		super(new BorderLayout());
+		super();
 		this.room = room;
 		this.room.addMessageListener(this);
 		
@@ -62,13 +62,15 @@ public class RoomView extends JPanel implements IMessageListener
 	 */
 	private void createView()
 	{
-		userList.setPreferredSize(new Dimension(100, 400));
-		this.add(userList, BorderLayout.WEST);
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		userList.setPreferredSize(new Dimension(200, 400));
+		this.add(userList);
 		
-		this.add(messagesView, BorderLayout.CENTER);
+		this.add(messagesView);
+		messagesView.setPreferredSize(new Dimension(400, 400));
 		
 		mapView.setPreferredSize(new Dimension(200, 200));
-		this.add(mapView, BorderLayout.EAST);
+		this.add(mapView);
 	}
 	
 	/**
@@ -84,5 +86,14 @@ public class RoomView extends JPanel implements IMessageListener
 	public void hasNewMessage(String from, String message)
 	{
 		this.messagesView.addMessage(from, message);
+	}
+	
+	/**
+	 * Gets the Room linked to this view
+	 * @return The Room
+	 */
+	public Room getRoom()
+	{
+		return room;
 	}
 }

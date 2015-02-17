@@ -1,6 +1,8 @@
 package fr.pastekweb.tchat.model;
 
 
+import java.util.ArrayList;
+
 import fr.pastekweb.tchat.event.DefaultObservable;
 
 /**
@@ -11,6 +13,10 @@ import fr.pastekweb.tchat.event.DefaultObservable;
 public class Room extends DefaultObservable
 { 	
 	/**
+	 * The room's id
+	 */
+	private String id;
+	/**
 	 * The list of connected users
 	 */
 	private UserList users;
@@ -18,8 +24,10 @@ public class Room extends DefaultObservable
 	/**
 	 * Initialize the room
 	 */
-	public Room()
+	public Room(String id)
 	{
+		super();
+		this.id = id;
 		users = new UserList();
 	}
 
@@ -51,6 +59,20 @@ public class Room extends DefaultObservable
 	}
 	
 	/**
+	 * Gets the users list to string
+	 * @return The users list to string
+	 */
+	public String getUsersListToString()
+	{
+		ArrayList<User> usersList = users.getList();
+		String ret = "";
+		for (User user : usersList) {
+			ret += user.getPseudo()+", ";
+		}
+		return ret;
+	}
+	
+	/**
 	 * 
 	 * @param from
 	 * @param message
@@ -60,5 +82,12 @@ public class Room extends DefaultObservable
 		notifyHasNewMessage(from, message);
 	}
 	
-	
+	/**
+	 * Gets the room's id
+	 * @return the room's id
+	 */
+	public String getId()
+	{
+		return id;
+	}
 }

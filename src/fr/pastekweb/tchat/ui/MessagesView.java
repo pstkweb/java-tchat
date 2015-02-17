@@ -1,6 +1,8 @@
 package fr.pastekweb.tchat.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -46,6 +48,7 @@ public class MessagesView extends JPanel
 		this.add(new JScrollPane(messagesArea), BorderLayout.CENTER);
 		JPanel controls = new JPanel(new BorderLayout());
 		controls.add(newMessageContent, BorderLayout.CENTER);
+		newMessageContent.setPreferredSize(new Dimension(100, 50));
 		controls.add(sendButton, BorderLayout.SOUTH);
 		this.add(controls, BorderLayout.SOUTH);
 	}
@@ -59,5 +62,23 @@ public class MessagesView extends JPanel
 	{
 		messagesArea.append(from+": "+NEW_LINE);
 		messagesArea.append(message+NEW_LINE+NEW_LINE);
+	}
+	
+	/**
+	 * Gets the send Button
+	 * @return The send Button
+	 */
+	public JButton getSendButton()
+	{
+		return sendButton;
+	}
+	
+	/**
+	 * Gets the new message content text area
+	 * @return The new message content
+	 */
+	public JTextArea getNewMessageContent()
+	{
+		return newMessageContent;
 	}
 }

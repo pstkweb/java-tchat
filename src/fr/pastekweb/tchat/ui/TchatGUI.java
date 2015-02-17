@@ -1,9 +1,11 @@
 package fr.pastekweb.tchat.ui;
 
 import java.awt.BorderLayout;
+
 import javax.swing.JPanel;
 
 import fr.pastekweb.tchat.client.IClient;
+import fr.pastekweb.tchat.controller.TchatController;
 
 /**
  * 
@@ -20,6 +22,10 @@ public class TchatGUI
 	 * The hashMap of room views mapped by rooms' id
 	 */
 	private TchatView tchatView;
+	/**
+	 * The controller
+	 */
+	private TchatController controller;
 	
 
 	/**
@@ -28,7 +34,10 @@ public class TchatGUI
 	public TchatGUI(IClient client)
 	{
 		view = new JPanel();
-		tchatView = new TchatView(client);
+		controller = new TchatController(client);
+		tchatView = new TchatView(client, controller);
+		
+		
 		
 		createView();
 	}
