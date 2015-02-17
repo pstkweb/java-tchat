@@ -35,8 +35,6 @@ public class FrameTest
 		frame.add(tchatGUI.getView(), BorderLayout.CENTER);
 		
 		frame.pack();
-		
-		client.sendMessage("Hello World !");
 	}
 
 }

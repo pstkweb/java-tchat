@@ -1,12 +1,18 @@
 package fr.pastekweb.tchat.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
 public class MessagesView extends JPanel
@@ -30,7 +36,7 @@ public class MessagesView extends JPanel
 
 	public MessagesView()
 	{
-		super(new BorderLayout());
+		super();
 		messagesArea = new JTextArea();
 		messagesArea.setEditable(false);
 		DefaultCaret caret = (DefaultCaret) messagesArea.getCaret();
@@ -48,12 +54,44 @@ public class MessagesView extends JPanel
 	 */
 	private void createView()
 	{
-		this.add(new JScrollPane(messagesArea), BorderLayout.CENTER);
-		JPanel controls = new JPanel(new BorderLayout());
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		messagesArea.setPreferredSize(new Dimension(100, 400));
+		this.add(new JLabel("Messages reçus:"));
+		JScrollPane scrollPane = new JScrollPane(messagesArea);
+		scrollPane.setBackground(new Color(0,0,0,0));
+		
+		Border current = scrollPane.getBorder();
+		Border empty = new EmptyBorder(0, 0, 20, 0);
+		if (current == null) {
+			scrollPane.setBorder(empty);
+		} else {
+			scrollPane.setBorder(new CompoundBorder(empty, current));
+		}
+		
+		current = messagesArea.getBorder();
+		empty = new EmptyBorder(10, 10, 10, 10);
+		if (current == null) {
+			messagesArea.setBorder(empty);
+		} else {
+			messagesArea.setBorder(new CompoundBorder(empty, current));
+		}
+		
+		current = newMessageContent.getBorder();
+		if (current == null) {
+			newMessageContent.setBorder(empty);
+		} else {
+			newMessageContent.setBorder(new CompoundBorder(empty, current));
+		}
+		this.add(scrollPane);
+		
+		JPanel controls = new JPanel();
+		controls.setLayout(new BorderLayout());
+		controls.add(new JLabel("Nouveau message:"), BorderLayout.NORTH);
 		controls.add(newMessageContent, BorderLayout.CENTER);
-		newMessageContent.setPreferredSize(new Dimension(100, 50));
+		newMessageContent.setPreferredSize(new Dimension(controls.getWidth(), 100));
+		
 		controls.add(sendButton, BorderLayout.SOUTH);
-		this.add(controls, BorderLayout.SOUTH);
+		this.add(controls);
 	}
 	
 	/**

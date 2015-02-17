@@ -30,7 +30,6 @@ public class TchatController implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		System.out.println("Send button clicked");
 		// Gets the current messagesView (the selected panel of the tabbed pane)
 		RoomView roomView = (RoomView) tchatView.getTabbedPane().getSelectedComponent();
 		
@@ -47,8 +46,10 @@ public class TchatController implements ActionListener
 	private void sendMessage(RoomView roomView)
 	{
 		String messageContent = roomView.getMessagesView().getNewMessageContent().getText();
-		client.sendMessage(messageContent, roomView.getRoom().getId());
-		roomView.getMessagesView().getNewMessageContent().setText("");
+		if (messageContent.length() > 0) {
+			client.sendMessage(messageContent, roomView.getRoom().getId());
+			roomView.getMessagesView().getNewMessageContent().setText("");
+		}	
 	}
 
 	/**

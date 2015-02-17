@@ -1,10 +1,16 @@
 package fr.pastekweb.tchat.ui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import fr.pastekweb.tchat.event.IMessageListener;
 import fr.pastekweb.tchat.model.Room;
@@ -63,11 +69,33 @@ public class RoomView extends JPanel implements IMessageListener
 	private void createView()
 	{
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		userList.setPreferredSize(new Dimension(200, 400));
-		this.add(userList);
+		JPanel listContainer = new JPanel();
+		listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS));
+		listContainer.add(new JLabel("Liste des utilisateurs:"));
+		JScrollPane scrollPane = new JScrollPane(userList);
+		scrollPane.setBackground(new Color(0,0,0,0));
+		Border current = listContainer.getBorder();
+		Border empty = new EmptyBorder(5, 20, 5, 0);
+		if (current == null) {
+			listContainer.setBorder(empty);
+		} else {
+			listContainer.setBorder(new CompoundBorder(empty, current));
+		}
+		listContainer.add(scrollPane);
+		
+		userList.setPreferredSize(new Dimension(250, this.getHeight()));
+		this.add(listContainer);
 		
 		this.add(messagesView);
-		messagesView.setPreferredSize(new Dimension(400, 400));
+		messagesView.setPreferredSize(new Dimension(500, 400));
+		
+		current = messagesView.getBorder();
+		empty = new EmptyBorder(5, 20, 5, 20);
+		if (current == null) {
+		    messagesView.setBorder(empty);
+		} else {
+			messagesView.setBorder(new CompoundBorder(empty, current));
+		}
 		
 		mapView.setPreferredSize(new Dimension(200, 200));
 		this.add(mapView);
