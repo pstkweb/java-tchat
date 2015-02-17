@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
 
 public class MessagesView extends JPanel
 {
@@ -32,6 +33,8 @@ public class MessagesView extends JPanel
 		super(new BorderLayout());
 		messagesArea = new JTextArea();
 		messagesArea.setEditable(false);
+		DefaultCaret caret = (DefaultCaret) messagesArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		
 		newMessageContent = new JTextArea();
 		newMessageContent.setEditable(true);
