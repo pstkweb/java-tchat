@@ -142,4 +142,13 @@ public class RoomView extends JPanel implements IMessageListener
 	{
 		return newRoomButton;
 	}
+	
+	/**
+	 * Gets the user list
+	 * @return The user list (JList)
+	 */
+	public JList<String> getUserList()
+	{
+		return userList;
+	}
 }

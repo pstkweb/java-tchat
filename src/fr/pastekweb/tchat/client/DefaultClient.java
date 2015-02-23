@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 
 import fr.pastekweb.tchat.model.Position;
+import fr.pastekweb.tchat.model.Room;
 import fr.pastekweb.tchat.model.Tchat;
 import fr.pastekweb.tchat.model.User;
 import fr.pastekweb.tchat.server.Protocol;
@@ -169,6 +173,31 @@ public class DefaultClient implements IClient
 	{
 		sendMessage(message, Server.ROOM_PUBLIC_KEY);
 	}
+	
+
+
+	@Override
+	public void newRoom(ArrayList<String> userNames)
+	{
+		String token = new BigInteger(130, new SecureRandom()).toString(32);
+		send(Protocol.NEW_ROOM);
+		send(token);
+
+		System.out.println("-------------------");
+		System.out.println("Send Protocol: "+Protocol.NEW_ROOM);
+		System.out.println("Token: "+token);
+		
+		if (!userNames.contains(tchat.getUser().getPseudo())) {
+			userNames.add(tchat.getUser().getPseudo());
+		}
+		
+		for (String username : userNames) {
+			send(username);
+			System.out.println("User: "+username);
+		}
+		send(token);
+		System.out.println("End token: "+token);
+	}
 
 	/**
 	 * Sends a message through the socket writer
@@ -179,6 +208,25 @@ public class DefaultClient implements IClient
 	{
 		writer.println(message);
 		writer.flush();
+	}
+	
+	/**
+	 * Receive the new roomId
+	 * @return Whether the room have been well created
+	 */
+	private boolean receiveNewRoom()
+	{
+		try {
+			String roomID = reader.readLine();
+			System.out.println("Room id: "+roomID);
+			Room room = new Room(roomID);
+			tchat.addRoom(room);
+			
+			return true;
+		} catch (IOException e) {
+			System.out.println("Stream reading error: "+e.getMessage());
+		}
+		return false;
 	}
 	
 	/**
@@ -309,6 +357,10 @@ public class DefaultClient implements IClient
 					case CONNECT_KO:
 						connected = false;
 						synchronized (this) { notify(); }
+						break;
+						
+					case NEW_ROOM:
+						receiveNewRoom();
 						break;
 						
 					case USERS_LIST:

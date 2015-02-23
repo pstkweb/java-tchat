@@ -58,7 +58,7 @@ public class Tchat extends DefaultRoomsObservable
 	public void addRoom(Room room)
 	{
 		rooms.put(room.getId(), room);
-		notifyRoomsListHasChanged();
+		notifyRoomsListHasChanged();	
 	}
 	
 	/**

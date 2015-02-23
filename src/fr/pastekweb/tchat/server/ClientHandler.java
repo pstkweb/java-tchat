@@ -8,11 +8,11 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import fr.pastekweb.tchat.model.Position;
 
 /**
@@ -86,6 +86,10 @@ public class ClientHandler implements Runnable {
 					case CONNECT:
 						handleConnectionRequest();
 						break;
+					
+					case NEW_ROOM:
+						handleNewRoomRequest();
+						break;
 						
 					case USERS_LIST:
 						sendUsersList();
@@ -117,7 +121,7 @@ public class ClientHandler implements Runnable {
 	}
 	
 	/**
-	 * Handle the user 's connection request
+	 * Handles the user's connection request
 	 * @throws IOException If an input/output error occurs
 	 */
 	private void handleConnectionRequest() throws IOException
@@ -133,15 +137,54 @@ public class ClientHandler implements Runnable {
 	}
 	
 	/**
-	 * Send the users list of the asked room
+	 * Handles the user's new room request
+	 * @throws IOException If an input/output error occurs
+	 */
+	private void handleNewRoomRequest() throws IOException
+	{
+		// TODO Remove logs
+		
+		String roomID = server.openNewRoom();
+		String token = in.readLine();
+		String pseudo;
+		ArrayList<String> usernames = new ArrayList<>();
+		
+		System.out.println("Room opened: "+roomID);
+		System.out.println("Token: "+token);
+		
+		while (!(pseudo = in.readLine()).equals(token)) {
+			usernames.add(pseudo);
+			System.out.println("User: "+pseudo);
+		}
+		
+		System.out.println("End Token: "+pseudo);
+		
+		for (String username : usernames) {
+			ClientHandler ch = server.getRoom(Server.ROOM_PUBLIC_KEY).get(username);
+			server.addClient(username, ch, roomID, false);
+		}
+		server.notifyRoomOpened(roomID);
+	}
+	
+	/**
+	 * Sends the users list of the asked room
 	 * @throws IOException Whether an input/output error occurs
 	 */
 	private void sendUsersList() throws IOException
 	{
-		// TODO Removes logs
-
 		// Gets the room 's id of the requested list
 		String roomID = in.readLine();
+		sendUsersList(roomID);
+	}
+	
+	/**
+	 * Sends the users list of the asked room
+	 * @param roomID
+	 */
+	private void sendUsersList(String roomID)
+	{
+		// TODO Removes logs
+		
 		String tokenUsers = new BigInteger(130, new SecureRandom()).toString(32);
 		
 		send(Protocol.USERS_LIST);
@@ -293,6 +336,18 @@ public class ClientHandler implements Runnable {
 		send(roomID);
 		send(username);
 		send(pos.toString());
+	}
+	
+	/**
+	 * Notifies the client that a new room is opened
+	 * @param roomID The room's Id
+	 * @param usernames the list of user's names
+	 */
+	public void sendNewRoomOpened(String roomID)
+	{
+		send(Protocol.NEW_ROOM);
+		send(roomID);
+		sendUsersList(roomID);
 	}
 	
 	/**

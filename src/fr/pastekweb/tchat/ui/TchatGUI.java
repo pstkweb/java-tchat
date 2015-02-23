@@ -38,6 +38,7 @@ public class TchatGUI
 		view = new JPanel();
 		controller = new TchatController(client, this);
 		tchatView = new TchatView(client, controller);
+		client.getTchat().addRoomsListener(tchatView);
 		usernameView = new UsernameView(controller);
 		
 		if (client.isConnected()) {

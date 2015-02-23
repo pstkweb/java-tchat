@@ -20,10 +20,7 @@ public class TchatView extends JPanel implements IRoomsListener
 {
 	private static final long serialVersionUID = 4461840737144380610L;
 	private static final int TAB_TITLE_LENGTH = 15;
-	/**
-	 * The client of the tchat
-	 */
-	private IClient client;
+
 	/**
 	 * The tabbed pane containing all the room Views
 	 */
@@ -43,7 +40,6 @@ public class TchatView extends JPanel implements IRoomsListener
 	 */
 	public TchatView(IClient client, TchatController controller)
 	{
-		this.client = client;
 		this.controller = controller;
 		roomViews = new HashMap<>();
 		tabbedPane = new JTabbedPane();
@@ -104,15 +100,21 @@ public class TchatView extends JPanel implements IRoomsListener
 			title = room.getUsersListToString();
 		}
 		
-		addTab(room, roomView, title, userList);
+		if (room.getId() == Server.ROOM_PUBLIC_KEY) {
+			addTab(room, roomView, "Public", "Public");
+		} else {
+			addTab(room, roomView, title, userList);
+		}
 	}
 
 	@Override
 	public void roomsListChanged(IRoomsObservable model)
 	{
-		tabbedPane = new JTabbedPane();
+		System.out.println("Room list changed");
+		clearTabbedPane();
 		HashMap<String, Room> rooms = model.getRooms();
 		
+		System.out.println("Rooms id:");
 		Iterator<Entry<String, Room>> it = rooms.entrySet().iterator();
 		while(it.hasNext()) {
 			Entry<String, Room> entry = it.next();
@@ -130,7 +132,16 @@ public class TchatView extends JPanel implements IRoomsListener
 			}
 			addTab(room, roomView);
 			roomView.getMessagesView().getSendButton().addActionListener(controller);
+			
+			System.out.println("  - "+entry.getKey());
 		}
+	}
+	
+	private void clearTabbedPane()
+	{
+		tabbedPane.removeAll();
+		tabbedPane.revalidate();
+		tabbedPane.repaint();
 	}
 	
 	/**

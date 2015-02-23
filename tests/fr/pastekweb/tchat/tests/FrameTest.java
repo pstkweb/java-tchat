@@ -14,15 +14,10 @@ public class FrameTest
 
 	public static void main(String[] args)
 	{
-		if (args.length < 1) {
-			System.out.println("Usage : java Test <nomUser>");
-			return;
-		}
-		
 		IClient client = new DefaultClient();
 		new Thread(client).start();
 		
-		JFrame frame = new JFrame("Tchat - "+args[0]);
+		JFrame frame = new JFrame("Tchat");
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);

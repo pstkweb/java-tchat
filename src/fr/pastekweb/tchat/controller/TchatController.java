@@ -2,6 +2,9 @@ package fr.pastekweb.tchat.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JList;
 
 import fr.pastekweb.tchat.client.IClient;
 import fr.pastekweb.tchat.server.Server;
@@ -39,7 +42,7 @@ public class TchatController implements ActionListener
 		if (e.getSource() == roomView.getMessagesView().getSendButton()) {
 			sendMessage(roomView);
 		} else if (e.getSource() == roomView.getNewRoomButton()) {
-			System.out.println("New room clicked");
+			openNewRoom(roomView);
 		} else if (e.getSource() == tchatGUI.getUsernameView().getSubmitButton()) {
 			connect();
 		}
@@ -56,6 +59,23 @@ public class TchatController implements ActionListener
 			client.sendMessage(messageContent, roomView.getRoom().getId());
 			roomView.getMessagesView().getNewMessageContent().setText("");
 		}	
+	}
+	
+	/**
+	 * Opens a new room on the server and the other clients
+	 * @param roomView
+	 */
+	private void openNewRoom(RoomView roomView)
+	{
+		JList<String> userList = roomView.getUserList();
+		int[] selectedItems = userList.getSelectedIndices();
+		ArrayList<String> userNames = new ArrayList<>();
+		
+		for (int i = 0; i < selectedItems.length; i++) {
+			userNames.add(userList.getModel().getElementAt(selectedItems[i]));
+		}
+		
+		client.newRoom(userNames);
 	}
 	
 	/**

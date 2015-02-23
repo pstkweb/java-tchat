@@ -1,5 +1,7 @@
 package fr.pastekweb.tchat.client;
 
+import java.util.ArrayList;
+
 import fr.pastekweb.tchat.model.Tchat;
 
 /**
@@ -42,6 +44,12 @@ public interface IClient extends Runnable
 	 * @param message The message to send
 	 */
 	public void sendMessage(String message);
+	
+	/**
+	 * Opens a new rooms on the server
+	 * @param userNames The list of user names
+	 */
+	public void newRoom(ArrayList<String> userNames);
 	
 	/**
 	 * Return the tchat model

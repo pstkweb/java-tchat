@@ -11,17 +11,8 @@
 			</classpath>
 		</java>
 	</target>
-	<target name="runClient1" description="Run a client named Maxime" depends="compile">
+	<target name="runClient" description="Run a client" depends="compile">
 		<java classname="fr.pastekweb.tchat.tests.FrameTest" fork="true">
-			<arg value="Maxime" />
-			<classpath>
-				<pathelement path="./bin"/>
-			</classpath>
-		</java>
-	</target>
-	<target name="runClient2" description="Run a client named Thomas" depends="compile">
-		<java classname="fr.pastekweb.tchat.tests.FrameTest" fork="true">
-			<arg value="Thomas" />
 			<classpath>
 				<pathelement path="./bin"/>
 			</classpath>

@@ -13,6 +13,7 @@ public enum Protocol {
 	USERS_LIST("listUsers"),
 	NEW_USER("addUser"),
 	USER_LEAVE("removeUser"),
+	NEW_ROOM("addRoom"),
 	SEND_MSG("sendMSG"),
 	RECEIVE_MSG("receiveMSG"),
 	POSITIONS_LIST("listPositions"),
