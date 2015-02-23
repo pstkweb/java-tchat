@@ -11,7 +11,10 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 
+import fr.pastekweb.tchat.event.IPositionsListener;
+import fr.pastekweb.tchat.event.IPositionsObservable;
 import fr.pastekweb.tchat.model.User;
 
 /**
@@ -20,7 +23,7 @@ import fr.pastekweb.tchat.model.User;
  * @author Thomas TRIBOULT
  *
  */
-public class CurrentUserView extends UserView implements MouseMotionListener, MouseListener {
+public class CurrentUserView extends UserView implements MouseMotionListener, MouseListener, IPositionsObservable {
 	private static final long serialVersionUID = 7834915844961113033L;
 	/**
 	 * The diameter of the field of listen
@@ -43,9 +46,15 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 	 * The Location of the user before dragging
 	 */
 	private Point previousLocation;
+    /**
+     * List of positions listeners
+     */
+    private ArrayList<IPositionsListener> listeners;
 	
 	public CurrentUserView(User u) {
 		super(u);
+
+        listeners = new ArrayList<>();
 		
 		setSize(
 			FIELD_OF_LISTEN + FIELD_STROKE_WIDTH, 
@@ -63,10 +72,10 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 		Graphics2D g2d = (Graphics2D) g;
 		
 		// Draw user dot
-		g2d.setColor(Color.CYAN);
+		g2d.setColor(USER_DOT_COLOR);
 		g2d.fillOval(
-			(int) ((FIELD_OF_LISTEN - USER_DOT_SIZE) / 2), 
-			(int) ((FIELD_OF_LISTEN - USER_DOT_SIZE) / 2), 
+			(FIELD_OF_LISTEN - USER_DOT_SIZE) / 2,
+			(FIELD_OF_LISTEN - USER_DOT_SIZE) / 2,
 			USER_DOT_SIZE, 
 			USER_DOT_SIZE
 		);
@@ -94,8 +103,8 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 		g2d.setColor(Color.black);
 		g2d.drawString(
 			model.getPseudo(),
-			(int) (FIELD_OF_LISTEN / 2 - nameStrWidth / 2), 
-			(int) (FIELD_OF_LISTEN / 2 + USER_DOT_SIZE + NAME_MARGIN_TOP)
+			FIELD_OF_LISTEN / 2 - nameStrWidth / 2,
+			FIELD_OF_LISTEN / 2 + USER_DOT_SIZE + NAME_MARGIN_TOP
 		);
 	}
 
@@ -122,8 +131,8 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 	public void mousePressed(MouseEvent e) {
 		// User dot rectangle
 		Rectangle rect = new Rectangle(
-			(int) ((FIELD_OF_LISTEN - USER_DOT_SIZE) / 2), 
-			(int) ((FIELD_OF_LISTEN - USER_DOT_SIZE) / 2), 
+			(FIELD_OF_LISTEN - USER_DOT_SIZE) / 2,
+			(FIELD_OF_LISTEN - USER_DOT_SIZE) / 2,
 			USER_DOT_SIZE, 
 			USER_DOT_SIZE
 		);
@@ -137,6 +146,11 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		isDragged = false;
+
+        // Notify all listeners that the current user position has changed
+        for (IPositionsListener listener : listeners) {
+            listener.positionChanged(e.getPoint());
+        }
 	}
 
 	@Override
@@ -144,4 +158,14 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 
 	@Override
 	public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void addPositionListener(IPositionsListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removePositionListener(IPositionsListener listener) {
+        listeners.remove(listener);
+    }
 }

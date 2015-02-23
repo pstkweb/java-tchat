@@ -63,7 +63,7 @@ public class UserView extends JPanel {
 		g2d.drawString(
 			model.getPseudo(),
 			0, 
-			(int) (USER_DOT_SIZE / 2 + USER_DOT_SIZE + NAME_MARGIN_TOP)
+			USER_DOT_SIZE / 2 + USER_DOT_SIZE + NAME_MARGIN_TOP
 		);
 		
 		// Draw user dot

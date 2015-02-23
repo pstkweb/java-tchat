@@ -19,7 +19,11 @@ public class Room extends DefaultObservable
 	/**
 	 * The list of connected users
 	 */
-	private UserList users;
+	private UsersList users;
+    /**
+     * The list of connected users position
+     */
+    private PositionsList positions;
 	
 	/**
 	 * Initialize the room
@@ -28,7 +32,8 @@ public class Room extends DefaultObservable
 	{
 		super();
 		this.id = id;
-		users = new UserList();
+		users = new UsersList();
+        positions = new PositionsList();
 	}
 
 	/**
@@ -47,16 +52,36 @@ public class Room extends DefaultObservable
 	public void removeUser(User user)
 	{
 		users.removeUser(user);
+        positions.removePosition(user);
 	}
-	
+
+    /**
+     * Adds a user position to the positions list
+     * @param user The user for which we add the position
+     * @param position The position to add
+     */
+    public void addPosition(User user, Position position)
+    {
+        positions.addPosition(user, position);
+    }
+
 	/**
 	 * Gets the list of users
-	 * @return The ArrayList of users
+	 * @return The list of users
 	 */
-	public UserList getUsers()
+	public UsersList getUsers()
 	{
 		return users;
 	}
+
+    /**
+     * Gets the list of users positions
+     * @return The list of positions
+     */
+    public PositionsList getPositions()
+    {
+        return positions;
+    }
 	
 	/**
 	 * Gets the users list to string
@@ -73,9 +98,9 @@ public class Room extends DefaultObservable
 	}
 	
 	/**
-	 * 
-	 * @param from
-	 * @param message
+	 * Notify all users from a new message in the room
+	 * @param from The user who sends the message
+	 * @param message The message
 	 */
 	public void newMessage(String from, String message)
 	{

@@ -1,7 +1,6 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -9,9 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 
 import fr.pastekweb.tchat.controller.TchatController;
 import fr.pastekweb.tchat.event.IMessageListener;
@@ -47,6 +43,8 @@ public class RoomView extends JPanel implements IMessageListener
 	 * The connected users map
 	 */
 	private MapView mapView;
+
+    private MessageInputView newMessageView;
 	
 	/**
 	 * Initialize the {@link Room} view
@@ -65,8 +63,10 @@ public class RoomView extends JPanel implements IMessageListener
 		
 		messagesView = new MessagesView();
 		
-		mapView = new MapView();
-		mapView.setModel(room.getUsers());
+		mapView = new MapView(controller, room);
+		mapView.setModel(room.getPositions());
+
+        newMessageView = new MessageInputView();
 		
 		createView();
 	}
@@ -76,47 +76,53 @@ public class RoomView extends JPanel implements IMessageListener
 	 */
 	private void createView()
 	{
-		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		this.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(2, 2, 2, 2);
+        c.fill = GridBagConstraints.BOTH;
+
 		JPanel listContainer = new JPanel();
 		listContainer.setLayout(new BoxLayout(listContainer, BoxLayout.Y_AXIS));
 		listContainer.add(new JLabel("Liste des utilisateurs:"));
+
 		JScrollPane scrollPane = new JScrollPane(userList);
-		scrollPane.setBackground(new Color(0,0,0,0));
-		Border current = listContainer.getBorder();
-		Border empty = new EmptyBorder(5, 20, 5, 0);
-		if (current == null) {
-			listContainer.setBorder(empty);
-		} else {
-			listContainer.setBorder(new CompoundBorder(empty, current));
-		}
 		listContainer.add(scrollPane);
-		listContainer.add(newRoomButton);
-		
-		userList.setPreferredSize(new Dimension(250, this.getHeight()));
-		this.add(listContainer);
-		
-		this.add(messagesView);
-		messagesView.setPreferredSize(new Dimension(500, 400));
-		
-		current = messagesView.getBorder();
-		empty = new EmptyBorder(5, 20, 5, 20);
-		if (current == null) {
-		    messagesView.setBorder(empty);
-		} else {
-			messagesView.setBorder(new CompoundBorder(empty, current));
-		}
-		
-		mapView.setPreferredSize(new Dimension(200, 200));
-		this.add(mapView);
+
+        listContainer.add(newRoomButton);
+
+        c.gridwidth = 1;
+        c.gridheight = 2;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weighty = 1;
+        c.weightx = 8;
+		this.add(listContainer, c);
+
+        c.gridheight = 1;
+        c.gridx = 1;
+        c.weightx = 48;
+		this.add(messagesView, c);
+
+        c.gridx = 2;
+        c.weightx = 44;
+		this.add(mapView, c);
+
+        c.gridwidth = 2;
+        c.gridx = 1;
+        c.gridy = 1;
+        c.weighty = 0;
+        c.weightx = 100;
+        this.add(newMessageView, c);
 	}
 	
 	/**
-	 * Gets the messages' view
-	 * @return The Messages View
+	 * Gets the new message view
+	 * @return The new message View
 	 */
-	public MessagesView getMessagesView()
+	public MessageInputView getNewMessageView()
 	{
-		return messagesView;
+		return newMessageView;
 	}
 
 	@Override
@@ -135,8 +141,8 @@ public class RoomView extends JPanel implements IMessageListener
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Gets the button to create new rooms
+	 * @return The JButton
 	 */
 	public JButton getNewRoomButton()
 	{

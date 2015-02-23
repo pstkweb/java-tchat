@@ -7,9 +7,12 @@ import java.util.ArrayList;
 import javax.swing.JList;
 
 import fr.pastekweb.tchat.client.IClient;
+import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.server.Server;
 import fr.pastekweb.tchat.ui.RoomView;
 import fr.pastekweb.tchat.ui.TchatGUI;
+
+import javax.swing.*;
 
 public class TchatController implements ActionListener
 {
@@ -24,7 +27,7 @@ public class TchatController implements ActionListener
 
 	/**
 	 * Initialize the controller
-	 * @param tchatView The view to control
+	 * @param client The client to control
 	 */
 	public TchatController(IClient client, TchatGUI tchatGUI)
 	{
@@ -39,7 +42,7 @@ public class TchatController implements ActionListener
 		RoomView roomView = (RoomView) tchatGUI.getTchatView().getTabbedPane().getSelectedComponent();
 		
 		// If the event source is the send button
-		if (e.getSource() == roomView.getMessagesView().getSendButton()) {
+		if (e.getSource() == roomView.getNewMessageView().getSendButton()) {
 			sendMessage(roomView);
 		} else if (e.getSource() == roomView.getNewRoomButton()) {
 			openNewRoom(roomView);
@@ -50,14 +53,14 @@ public class TchatController implements ActionListener
 	
 	/**
 	 * Sends a new message
-	 * @param messagesView The MessageView that contains the message to send 
+	 * @param roomView The room which the message is sent
 	 */
 	private void sendMessage(RoomView roomView)
 	{
-		String messageContent = roomView.getMessagesView().getNewMessageContent().getText();
+		String messageContent = roomView.getNewMessageView().getNewMessageContent().getText();
 		if (messageContent.length() > 0) {
 			client.sendMessage(messageContent, roomView.getRoom().getId());
-			roomView.getMessagesView().getNewMessageContent().setText("");
+			roomView.getNewMessageView().getNewMessageContent().setText("");
 		}	
 	}
 	
@@ -87,10 +90,26 @@ public class TchatController implements ActionListener
 		String username = tchatGUI.getUsernameView().getUsernameField().getText();
 		
 		if (client.connect(username)) {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(tchatGUI.getView());
+            frame.setTitle("Tchat - " + username);
+
+            client.getTchat().setPseudo(username);
+
 			tchatGUI.createView();
 			client.askClientsList(Server.ROOM_PUBLIC_KEY);
+
+            client.askPositionsList(Server.ROOM_PUBLIC_KEY);
 		} else {
 			tchatGUI.getUsernameView().setErrorMessage("Ce pseudo est déjà utilisé. Veuillez en choisir un autre.");
 		}
 	}
+
+    /**
+     * Return the client thread
+     * @return The thread running on this interface
+     */
+    public IClient getClient()
+    {
+        return client;
+    }
 }

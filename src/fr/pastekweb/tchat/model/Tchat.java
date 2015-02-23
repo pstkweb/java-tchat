@@ -1,7 +1,6 @@
 package fr.pastekweb.tchat.model;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 import fr.pastekweb.tchat.event.DefaultRoomsObservable;
@@ -100,7 +99,18 @@ public class Tchat extends DefaultRoomsObservable
 	{
 		rooms.get(roomID).newMessage(from, message);
 	}
-	
+
+    /**
+     * Adds a user's position to the given room
+     * @param roomID The room's id
+     * @param user The user for which we add the position
+     * @param position The position
+     */
+    public void addPosition(String roomID, User user, Position position)
+    {
+        rooms.get(roomID).addPosition(user, position);
+    }
+
 	/**
 	 * Removes a user from the given room.
 	 * If the given room is the public room, also remove the user
@@ -113,12 +123,11 @@ public class Tchat extends DefaultRoomsObservable
 		rooms.get(roomID).removeUser(user);
 		
 		// If the user left the public room, he must left the other rooms
-		if (roomID == Server.ROOM_PUBLIC_KEY) {
-			Iterator<Entry<String, Room>> it = rooms.entrySet().iterator();
-			while (it.hasNext()) {
-				Room room = it.next().getValue();
-				room.removeUser(user);
-			}
+		if (roomID.equals(Server.ROOM_PUBLIC_KEY)) {
+            for (Entry<String, Room> stringRoomEntry : rooms.entrySet()) {
+                Room room = stringRoomEntry.getValue();
+                room.removeUser(user);
+            }
 		}
 	}
 }

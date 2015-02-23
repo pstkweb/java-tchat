@@ -9,7 +9,7 @@ import javax.swing.AbstractListModel;
  * 
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
-public class UserList extends AbstractListModel<String>
+public class UsersList extends AbstractListModel<String>
 {
 	private static final long serialVersionUID = -4217087444721505988L;
 	
@@ -21,7 +21,7 @@ public class UserList extends AbstractListModel<String>
 	/**
 	 * Initialize the user list with empty list
 	 */
-	public UserList()
+	public UsersList()
 	{
 		users = new ArrayList<>();
 	}
@@ -38,7 +38,7 @@ public class UserList extends AbstractListModel<String>
 	
 	/**
 	 * Removes a user from the list
-	 * @param username The user to remove
+	 * @param user The user to remove
 	 */
 	public void removeUser(User user)
 	{

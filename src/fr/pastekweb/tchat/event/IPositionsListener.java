@@ -1,5 +1,7 @@
 package fr.pastekweb.tchat.event;
 
+import java.awt.*;
+
 /**
  * A listener for the positions
  * 
@@ -9,7 +11,7 @@ public interface IPositionsListener
 {
 	/**
 	 * Notify that listener that the clients positions have changed 
-	 * @param model The {@link IObservable} model
+	 * @param p The destination position
 	 */
-	public void positionsChanged(IPositionsObservable model);
+	public void positionChanged(Point p);
 }

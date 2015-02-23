@@ -6,8 +6,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -33,7 +31,11 @@ public class Server
 	/**
 	 * The HashMap of differents opened rooms
 	 */
-	private HashMap<String, HashMap<String, ClientHandler> > rooms;
+	private HashMap<String, HashMap<String, ClientHandler>> rooms;
+    /**
+     * The HashMap of differents users positions in rooms
+     */
+    private HashMap<String, HashMap<String, Position>> roomsPositions;
 	
 	/**
 	 * Create an instance of the server with 
@@ -42,11 +44,14 @@ public class Server
 	public Server() 
 	{
 		rooms = new HashMap<>();
-		rooms.put(ROOM_PUBLIC_KEY, new HashMap<>());
+		rooms.put(ROOM_PUBLIC_KEY, new HashMap<String, ClientHandler>());
+
+        roomsPositions = new HashMap<>();
+        roomsPositions.put(ROOM_PUBLIC_KEY, new HashMap<String, Position>());
 		
 		try {
 			socket = new ServerSocket(PORT);
-			
+
 			while (true) {
 				Socket client = socket.accept();
 				new ClientHandler(client, this);
@@ -61,8 +66,8 @@ public class Server
 	 * @param pseudo The pseudo to check
 	 * @return True if the pseudo is used
 	 */
-	public boolean isUsed(String pseudo) {
-		return rooms.get(ROOM_PUBLIC_KEY).containsKey(pseudo);
+	public boolean isNotUsed(String pseudo) {
+		return !rooms.get(ROOM_PUBLIC_KEY).containsKey(pseudo);
 	}
 	
 	/**
@@ -78,17 +83,8 @@ public class Server
 	 * Return the list of clients position
 	 * @return The list of connected users position
 	 */
-	public HashMap<String, Position> getPositions() {
-		HashMap<String, Position> positions = new HashMap<>();
-
-		Iterator<Entry<String, ClientHandler>> it = rooms.get(ROOM_PUBLIC_KEY).entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, ClientHandler> clientTo = (Entry<String, ClientHandler>) it.next();
-			
-			positions.put(clientTo.getKey(), clientTo.getValue().getPosition());
-		}
-		
-		return positions;
+	public HashMap<String, Position> getPositions(String roomID) {
+		return roomsPositions.get(roomID);
 	}
 	
 	/**
@@ -116,15 +112,6 @@ public class Server
 	public HashMap<String, ClientHandler> getRoom(String roomID)
 	{
 		return rooms.get(roomID);
-	}
-	
-	/**
-	 * Get a client by its pseudo
-	 * @param pseudo The pseudo to find
-	 * @return The client thread using this pseudo
-	 */
-	public ClientHandler getClient(String pseudo) {
-		return rooms.get(ROOM_PUBLIC_KEY).get(pseudo);
 	}
 	
 	/**
@@ -164,8 +151,8 @@ public class Server
 	public void addClient(String pseudo, ClientHandler client, String roomID, boolean notifyUsers)
 	{
 		// If the client have not been added to the public room yet 
-		if (!isUsed(pseudo) && roomID != ROOM_PUBLIC_KEY) {
-			addClientToRoom(pseudo, client, ROOM_PUBLIC_KEY, notifyUsers);
+		if (isNotUsed(pseudo) && !ROOM_PUBLIC_KEY.equals(roomID)) {
+			addClientToRoom(pseudo, client, ROOM_PUBLIC_KEY, true);
 		}
 		
 		if (!rooms.containsKey(roomID)) {
@@ -183,20 +170,21 @@ public class Server
 	private void addClientToRoom(String username, ClientHandler client, String roomID, boolean notifyUsers)
 	{
 		rooms.get(roomID).put(username, client);
-		client.setPosition(new Position(0, 0));
+        roomsPositions.get(roomID).put(username, Position.getRand());
 
 		if (notifyUsers) {
 			// Notify all clients of a new user, except the new one
-			Iterator<Entry<String, ClientHandler>> it = rooms.get(roomID).entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry<String, ClientHandler> clientTo = (Entry<String, ClientHandler>) it.next();
-				
-				if (!username.equals(clientTo.getKey())) {
-					clientTo.getValue().sendNewUser(username, roomID);
-					
-					clientTo.getValue().sendPosition(rooms.get(roomID).get(username).getPosition(), roomID);
-				}
-			}
+            for (Entry<String, ClientHandler> clientTo : rooms.get(roomID).entrySet()) {
+                if (!username.equals(clientTo.getKey())) {
+                    try {
+                        clientTo.getValue().sendNewUser(username, roomID);
+
+                        clientTo.getValue().sendPosition(username, roomsPositions.get(roomID).get(username), roomID);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 		}
 	}
 	
@@ -206,7 +194,8 @@ public class Server
 	 */
 	private void openNewRoom(String roomID)
 	{
-		rooms.put(roomID, new HashMap<>());
+		rooms.put(roomID, new HashMap<String, ClientHandler>());
+        roomsPositions.put(roomID, new HashMap<String, Position>());
 	}
 	
 	/**
@@ -223,9 +212,28 @@ public class Server
 		openNewRoom(roomID);
 		return roomID;
 	}
+
+    /**
+     * Remove a client from a room
+     * @param username The username of the disconnected user
+     * @param client The socket of the disconnected user
+     * @param roomID The room from which remove the user
+     */
+    public void removeClientFromRoom(String username, ClientHandler client, String roomID)
+    {
+        rooms.get(roomID).remove(client);
+        roomsPositions.get(roomID).remove(username);
+
+        // Notify all clients of a leaving user, except the one that has left
+        try {
+            client.notifyUserLeft(roomID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 	
 	/**
-	 * Notitfies all user in a room that this room have been opened
+	 * Notifies all user in a room that this room have been opened
 	 * @param roomID The room's Id
 	 */
 	public void notifyRoomOpened(String roomID)
@@ -233,9 +241,29 @@ public class Server
 		HashMap<String, ClientHandler> room = getRoom(roomID);
 		
 		for (Entry<String, ClientHandler> client : room.entrySet()) {
-			client.getValue().sendNewRoomOpened(roomID);
-		}
+            try {
+                client.getValue().sendNewRoomOpened(roomID);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 	}
+
+    /**
+     * Notify the server and others user of a user disconnection
+     * @param client The disconnected user's socket
+     */
+    public void disconnectedUser(ClientHandler client)
+    {
+        for (Entry<String, HashMap<String, ClientHandler>> room : rooms.entrySet()) {
+            // If the disconnected was part of the room notify all clients of it disconnection
+            if (room.getValue().containsValue(client)) {
+                removeClientFromRoom(client.getName(), client, room.getKey());
+            }
+        }
+
+        client.terminate();
+    }
 	
 	/**
 	 * The main method to launch the server

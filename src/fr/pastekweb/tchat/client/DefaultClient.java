@@ -137,14 +137,40 @@ public class DefaultClient implements IClient
 		}
 	}
 
-	/**
+    @Override
+    public void askPositionsList(String roomID) {
+        send(Protocol.POSITIONS_LIST);
+        send(roomID);
+
+        synchronized (this) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
 	 * Adds a client to the clients list
+     * @param roomID The room in which to add the user
 	 * @param user The client
 	 */
 	public void addClient(String roomID, User user)
 	{
 		tchat.addUser(roomID, user);
 	}
+
+    /***
+     * Adds a position to the positions list
+     * @param roomID The room in which to add the user
+     * @param user The user
+     * @param position The position
+     */
+    public void addPosition(String roomID, User user, Position position)
+    {
+        tchat.addPosition(roomID, user, position);
+    }
 
 	/**
 	 * Removes a client from the clients list
@@ -198,6 +224,18 @@ public class DefaultClient implements IClient
 		send(token);
 		System.out.println("End token: "+token);
 	}
+
+    public void sendPosition(Position position, String roomID)
+    {
+        send(Protocol.SEND_POS);
+        send(roomID);
+        send(position);
+
+        System.out.println("-------------------");
+        System.out.println("Send protocol: "+Protocol.SEND_POS);
+        System.out.println("Room id: "+roomID);
+        System.out.println("Position: " + position);
+    }
 
 	/**
 	 * Sends a message through the socket writer
@@ -313,25 +351,56 @@ public class DefaultClient implements IClient
 		}
 		return false;
 	}
+
+    private boolean receivePositionList()
+    {
+        try {
+            String roomID = reader.readLine();
+            String token = reader.readLine();
+            String user;
+
+            System.out.println("Room id: "+roomID);
+            System.out.println("Token: "+token);
+
+            while (!(user = reader.readLine()).equals(token)) {
+                System.out.println("User: "+user);
+                String position = reader.readLine();
+                String[] coordinates = position.split(":");
+                Position pos = new Position(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
+
+                addPosition(roomID, new User(user), pos);
+                System.out.println("Position: "+pos);
+            }
+            System.out.println("End token: "+user);
+
+            return true;
+        } catch (IOException e) {
+            System.out.println("Stream reading error: "+e.getMessage());
+        }
+        return false;
+    }
 	
 	/**
-	 * 
-	 * @return
+	 * Receive the position of a user in a room
+	 * @return True if position is well received
 	 */
 	private boolean receivePosition()
 	{
 		try {
 			String roomID = reader.readLine();
-			String from = reader.readLine();
+			User from = new User(reader.readLine());
 			String pos = reader.readLine();
 			String[] coordinates = pos.split(":");
 			
 			Position position = new Position(Integer.parseInt(coordinates[0]), Integer.parseInt(coordinates[1]));
 			
 			System.out.println("Room id: "+roomID);
-			System.out.println("From: "+from);
+			System.out.println("User: "+from);
 			System.out.println("Position: "+position.toString());
-			
+
+            // Update the user position
+            tchat.addPosition(roomID, from, position);
+
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());
@@ -379,6 +448,11 @@ public class DefaultClient implements IClient
 					case RECEIVE_MSG:
 						receiveMessage();
 						break;
+
+                    case POSITIONS_LIST:
+                        receivePositionList();
+                        synchronized (this) { notify(); }
+                        break;
 						
 					case RECEIVE_POS:
 						receivePosition();

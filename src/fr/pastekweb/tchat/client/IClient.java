@@ -2,6 +2,7 @@ package fr.pastekweb.tchat.client;
 
 import java.util.ArrayList;
 
+import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.model.Tchat;
 
 /**
@@ -29,9 +30,14 @@ public interface IClient extends Runnable
 	/**
 	 * Updates the user list
 	 * @param roomID The room 's id of the asked list
-	 * @return Whether the user list have been updated well
 	 */
 	public void askClientsList(String roomID);
+
+    /**
+     * Updates the user's positions list
+     * @param roomID The room 's id of the asked list
+     */
+    public void askPositionsList(String roomID);
 	
 	/**
 	 * Sends a public message to the given room
@@ -44,6 +50,13 @@ public interface IClient extends Runnable
 	 * @param message The message to send
 	 */
 	public void sendMessage(String message);
+
+    /**
+     * Sends the current user position to the server
+     * @param position The position of the user
+     * @param roomID The room's id of the current room
+     */
+    public void sendPosition(Position position, String roomID);
 	
 	/**
 	 * Opens a new rooms on the server

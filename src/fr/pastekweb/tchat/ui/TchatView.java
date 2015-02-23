@@ -2,7 +2,6 @@ package fr.pastekweb.tchat.ui;
 
 import java.awt.BorderLayout;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
@@ -45,21 +44,19 @@ public class TchatView extends JPanel implements IRoomsListener
 		tabbedPane = new JTabbedPane();
 		
 		// Creates a RoomView for each tchat room
-		Iterator<Entry<String, Room>> it = client.getTchat().getRooms().entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<String, Room> entry = it.next();
-			Room room = entry.getValue();
-			
-			RoomView roomView = new RoomView(room, controller);
-			roomViews.put(entry.getKey(), roomView);
-		
-			if (entry.getKey() == Server.ROOM_PUBLIC_KEY) {
-				addTab(room, roomView, "Public", "Public");
-			} else {
-				addTab(room, roomView);
-			}
-			roomView.getMessagesView().getSendButton().addActionListener(controller);
-		}
+        for (Entry<String, Room> entry : client.getTchat().getRooms().entrySet()) {
+            Room room = entry.getValue();
+
+            RoomView roomView = new RoomView(room, controller);
+            roomViews.put(entry.getKey(), roomView);
+
+            if (Server.ROOM_PUBLIC_KEY.equals(entry.getKey())) {
+                addTab(room, roomView, "Public", "Public");
+            } else {
+                addTab(room, roomView);
+            }
+            roomView.getNewMessageView().getSendButton().addActionListener(controller);
+        }
 		createView();
 	}
 
@@ -100,7 +97,7 @@ public class TchatView extends JPanel implements IRoomsListener
 			title = room.getUsersListToString();
 		}
 		
-		if (room.getId() == Server.ROOM_PUBLIC_KEY) {
+		if (Server.ROOM_PUBLIC_KEY.equals(room.getId())) {
 			addTab(room, roomView, "Public", "Public");
 		} else {
 			addTab(room, roomView, title, userList);
@@ -113,15 +110,12 @@ public class TchatView extends JPanel implements IRoomsListener
 		System.out.println("Room list changed");
 		clearTabbedPane();
 		HashMap<String, Room> rooms = model.getRooms();
-		
-		System.out.println("Rooms id:");
-		Iterator<Entry<String, Room>> it = rooms.entrySet().iterator();
-		while(it.hasNext()) {
-			Entry<String, Room> entry = it.next();
-			
-			Room room = entry.getValue();
-			RoomView roomView;
-			/*
+
+        System.out.println("Rooms id:");
+        for (Entry<String, Room> entry : rooms.entrySet()) {
+            Room room = entry.getValue();
+            RoomView roomView;
+            /*
 			 * If the room view already exists, use this one
 			 * else creates a new view from the room object
 			 */
@@ -131,7 +125,7 @@ public class TchatView extends JPanel implements IRoomsListener
 				roomView = new RoomView(room, controller);
 			}
 			addTab(room, roomView);
-			roomView.getMessagesView().getSendButton().addActionListener(controller);
+			roomView.getNewMessageView().getSendButton().addActionListener(controller);
 			
 			System.out.println("  - "+entry.getKey());
 		}

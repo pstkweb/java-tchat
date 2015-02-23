@@ -3,7 +3,7 @@ package fr.pastekweb.tchat.tests;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import fr.pastekweb.tchat.client.DefaultClient;
 import fr.pastekweb.tchat.client.IClient;
@@ -19,7 +19,7 @@ public class FrameTest
 		
 		JFrame frame = new JFrame("Tchat");
 		frame.setLayout(new BorderLayout());
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.setPreferredSize(new Dimension(1000, 700));
 		

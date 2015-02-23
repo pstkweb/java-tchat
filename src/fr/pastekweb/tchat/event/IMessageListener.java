@@ -9,7 +9,8 @@ public interface IMessageListener
 {
 	/**
 	 * Notify that listener that the model has a new private message
-	 * @param model The {@link IObservable} model
+     * @param from The pseudo of the user who send the message
+     * @param message The message
 	 */
 	public void hasNewMessage(String from, String message);
 }

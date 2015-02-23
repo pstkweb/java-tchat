@@ -7,16 +7,12 @@ import java.util.HashSet;
  * 
  * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
  */
-public abstract class DefaultObservable implements IMessageObservable, IPositionsObservable
+public abstract class DefaultObservable implements IMessageObservable
 {
 	/**
 	 * The HashSet of the message listeners
 	 */
 	private HashSet<IMessageListener> messageListeners;
-	/**
-	 * The HashSet of the position listeners
-	 */
-	private HashSet<IPositionsListener> positionsListeners;
 
 	/**
 	 * Initialize the list of listeners
@@ -24,7 +20,6 @@ public abstract class DefaultObservable implements IMessageObservable, IPosition
 	public DefaultObservable()
 	{
 		messageListeners = new HashSet<>();
-		positionsListeners = new HashSet<>();
 	}
 
 	@Override
@@ -38,19 +33,7 @@ public abstract class DefaultObservable implements IMessageObservable, IPosition
 	{
 		messageListeners.remove(listener);
 	}
-	
-	@Override
-	public void addPositionListener(IPositionsListener listener)
-	{
-		positionsListeners.add(listener);
-	}
-	
-	@Override
-	public void removePositionListener(IPositionsListener listener)
-	{
-		positionsListeners.remove(listener);
-	}
-	
+
 	/**
 	 * Notify listener that there's a new message
 	 */
@@ -58,16 +41,6 @@ public abstract class DefaultObservable implements IMessageObservable, IPosition
 	{
 		for (IMessageListener listener : messageListeners) {
 			listener.hasNewMessage(from, message);
-		}
-	}
-	
-	/**
-	 * Notify listeners that users' positions have changed
-	 */
-	public void notifyPositionsChanged()
-	{
-		for (IPositionsListener listener : positionsListeners) {
-			listener.positionsChanged(this);
 		}
 	}
 }

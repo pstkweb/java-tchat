@@ -1,5 +1,7 @@
 package fr.pastekweb.tchat.model;
 
+import javafx.geometry.Pos;
+
 import java.awt.Point;
 import java.util.Random;
 
@@ -22,6 +24,15 @@ public class Position extends Point {
 	public Position(int x, int y) {
 		super(x, y);
 	}
+
+    /**
+     * Instantiate a new Position with a point
+     * @param p The point
+     */
+    public Position(Point p)
+    {
+        super(p);
+    }
 	
 	/**
 	 * A String representation of this coordinate
