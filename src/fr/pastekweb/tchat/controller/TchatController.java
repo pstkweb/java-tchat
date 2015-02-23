@@ -4,15 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import fr.pastekweb.tchat.client.IClient;
+import fr.pastekweb.tchat.server.Server;
 import fr.pastekweb.tchat.ui.RoomView;
-import fr.pastekweb.tchat.ui.TchatView;
+import fr.pastekweb.tchat.ui.TchatGUI;
 
 public class TchatController implements ActionListener
 {
 	/**
 	 * The tchat view that this controller controls
 	 */
-	private TchatView tchatView;
+	private TchatGUI tchatGUI;
 	/**
 	 * The tchat client
 	 */
@@ -22,20 +23,25 @@ public class TchatController implements ActionListener
 	 * Initialize the controller
 	 * @param tchatView The view to control
 	 */
-	public TchatController(IClient client)
+	public TchatController(IClient client, TchatGUI tchatGUI)
 	{
 		this.client = client;
+		this.tchatGUI = tchatGUI;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
 		// Gets the current messagesView (the selected panel of the tabbed pane)
-		RoomView roomView = (RoomView) tchatView.getTabbedPane().getSelectedComponent();
+		RoomView roomView = (RoomView) tchatGUI.getTchatView().getTabbedPane().getSelectedComponent();
 		
 		// If the event source is the send button
 		if (e.getSource() == roomView.getMessagesView().getSendButton()) {
 			sendMessage(roomView);
+		} else if (e.getSource() == roomView.getNewRoomButton()) {
+			System.out.println("New room clicked");
+		} else if (e.getSource() == tchatGUI.getUsernameView().getSubmitButton()) {
+			connect();
 		}
 	}
 	
@@ -51,13 +57,20 @@ public class TchatController implements ActionListener
 			roomView.getMessagesView().getNewMessageContent().setText("");
 		}	
 	}
-
+	
 	/**
-	 * Sets the tchat view linked to this controller
-	 * @param tchatView The TchatView
+	 * Connects the user to the server by using the given
+	 * user name.
 	 */
-	public void setTchatView(TchatView tchatView)
+	private void connect()
 	{
-		this.tchatView = tchatView;
+		String username = tchatGUI.getUsernameView().getUsernameField().getText();
+		
+		if (client.connect(username)) {
+			tchatGUI.createView();
+			client.askClientsList(Server.ROOM_PUBLIC_KEY);
+		} else {
+			tchatGUI.getUsernameView().setErrorMessage("Ce pseudo est déjà utilisé. Veuillez en choisir un autre.");
+		}
 	}
 }

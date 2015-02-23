@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -12,6 +13,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import fr.pastekweb.tchat.controller.TchatController;
 import fr.pastekweb.tchat.event.IMessageListener;
 import fr.pastekweb.tchat.model.Room;
 
@@ -34,6 +36,10 @@ public class RoomView extends JPanel implements IMessageListener
 	 */
 	private JList<String> userList;
 	/**
+	 * Button to create a new room
+	 */
+	private JButton newRoomButton;
+	/**
 	 * The messages view
 	 */
 	private MessagesView messagesView;
@@ -46,7 +52,7 @@ public class RoomView extends JPanel implements IMessageListener
 	 * Initialize the {@link Room} view
 	 * @param room The {@link Room}
 	 */
-	public RoomView(Room room)
+	public RoomView(Room room, TchatController controller)
 	{
 		super();
 		this.room = room;
@@ -54,6 +60,8 @@ public class RoomView extends JPanel implements IMessageListener
 		
 		userList = new JList<>();
 		userList.setModel(room.getUsers());
+		newRoomButton = new JButton("Ouvrir un nouveau salon");
+		newRoomButton.addActionListener(controller);
 		
 		messagesView = new MessagesView();
 		
@@ -82,6 +90,7 @@ public class RoomView extends JPanel implements IMessageListener
 			listContainer.setBorder(new CompoundBorder(empty, current));
 		}
 		listContainer.add(scrollPane);
+		listContainer.add(newRoomButton);
 		
 		userList.setPreferredSize(new Dimension(250, this.getHeight()));
 		this.add(listContainer);
@@ -123,5 +132,14 @@ public class RoomView extends JPanel implements IMessageListener
 	public Room getRoom()
 	{
 		return room;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public JButton getNewRoomButton()
+	{
+		return newRoomButton;
 	}
 }

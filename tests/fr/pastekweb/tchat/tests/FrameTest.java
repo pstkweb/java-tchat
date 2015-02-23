@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 
 import fr.pastekweb.tchat.client.DefaultClient;
 import fr.pastekweb.tchat.client.IClient;
-import fr.pastekweb.tchat.server.Server;
 import fr.pastekweb.tchat.ui.TchatGUI;
 
 public class FrameTest
@@ -22,8 +21,6 @@ public class FrameTest
 		
 		IClient client = new DefaultClient();
 		new Thread(client).start();
-		client.connect(args[0]);
-		client.askClientsList(Server.ROOM_PUBLIC_KEY);
 		
 		JFrame frame = new JFrame("Tchat - "+args[0]);
 		frame.setLayout(new BorderLayout());

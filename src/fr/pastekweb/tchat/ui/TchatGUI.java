@@ -1,7 +1,6 @@
 package fr.pastekweb.tchat.ui;
 
 import java.awt.BorderLayout;
-
 import javax.swing.JPanel;
 
 import fr.pastekweb.tchat.client.IClient;
@@ -23,10 +22,13 @@ public class TchatGUI
 	 */
 	private TchatView tchatView;
 	/**
+	 * The view to ask the user's name
+	 */
+	private UsernameView usernameView;
+	/**
 	 * The controller
 	 */
 	private TchatController controller;
-	
 
 	/**
 	 * Initialize the GUI
@@ -34,29 +36,69 @@ public class TchatGUI
 	public TchatGUI(IClient client)
 	{
 		view = new JPanel();
-		controller = new TchatController(client);
+		controller = new TchatController(client, this);
 		tchatView = new TchatView(client, controller);
+		usernameView = new UsernameView(controller);
 		
+		if (client.isConnected()) {
+			createView();
+		} else {
+			createUsernameView();
+		}
 		
-		
-		createView();
 	}
 		
 	/**
 	 * Creates the view containing all graphical components
 	 */
-	private void createView()
+	public void createView()
 	{
+		clearView();
 		view.setLayout(new BorderLayout());
 		view.add(tchatView, BorderLayout.CENTER);
+	}
+	
+	/**
+	 * Creates the view that asks the user's name
+	 */
+	public void createUsernameView()
+	{
+		clearView();
+		view.setLayout(new BorderLayout());
+		view.add(usernameView, BorderLayout.CENTER);
+	}
+	
+	private void clearView()
+	{
+		view.removeAll();
+		view.revalidate();
+		view.repaint();
+	}
+	
+	/**
+	 * Gets the GUI view
+	 * @return
+	 */
+	public JPanel getView()
+	{
+		return view;
 	}
 	
 	/**
 	 * Gets the GUI view
 	 * @return The view
 	 */
-	public JPanel getView()
+	public TchatView getTchatView()
 	{
-		return view;
+		return tchatView;
+	}
+	
+	/**
+	 * Gets the username view
+	 * @return The username view
+	 */
+	public UsernameView getUsernameView()
+	{
+		return usernameView;
 	}
 }

@@ -45,7 +45,6 @@ public class TchatView extends JPanel implements IRoomsListener
 	{
 		this.client = client;
 		this.controller = controller;
-		controller.setTchatView(this);
 		roomViews = new HashMap<>();
 		tabbedPane = new JTabbedPane();
 		
@@ -55,7 +54,7 @@ public class TchatView extends JPanel implements IRoomsListener
 			Entry<String, Room> entry = it.next();
 			Room room = entry.getValue();
 			
-			RoomView roomView = new RoomView(room);
+			RoomView roomView = new RoomView(room, controller);
 			roomViews.put(entry.getKey(), roomView);
 		
 			if (entry.getKey() == Server.ROOM_PUBLIC_KEY) {
@@ -127,7 +126,7 @@ public class TchatView extends JPanel implements IRoomsListener
 			if (roomViews.containsKey(entry.getKey())) {
 				roomView = roomViews.get(entry.getKey());
 			} else {
-				roomView = new RoomView(room);
+				roomView = new RoomView(room, controller);
 			}
 			addTab(room, roomView);
 			roomView.getMessagesView().getSendButton().addActionListener(controller);
