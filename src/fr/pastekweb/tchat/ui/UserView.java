@@ -36,9 +36,13 @@ public class UserView extends JPanel {
 	 * The User 
 	 */
 	protected User model;
-	
-	public UserView(User u) {
-		model = u;
+
+    /**
+     * Instantiate a user view with its model
+     * @param user
+     */
+	public UserView(User user) {
+		model = user;
 		
 		setSize(USER_DOT_SIZE, USER_DOT_SIZE);
 		setVisible(true);

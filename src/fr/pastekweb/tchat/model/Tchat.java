@@ -111,6 +111,17 @@ public class Tchat extends DefaultRoomsObservable
         rooms.get(roomID).addPosition(user, position);
     }
 
+    /**
+     * Update the position of the given user in the given room
+     * @param roomID The room's id
+     * @param user The user for which we update the position
+     * @param position The position
+     */
+    public void setUserPosition(String roomID, User user, Position position)
+    {
+        rooms.get(roomID).setPosition(user, position);
+    }
+
 	/**
 	 * Removes a user from the given room.
 	 * If the given room is the public room, also remove the user

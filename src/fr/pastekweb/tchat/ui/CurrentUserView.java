@@ -21,7 +21,6 @@ import fr.pastekweb.tchat.model.User;
  * Display the current user with it's field of listen
  * 
  * @author Thomas TRIBOULT
- *
  */
 public class CurrentUserView extends UserView implements MouseMotionListener, MouseListener, IPositionsObservable {
 	private static final long serialVersionUID = 7834915844961113033L;
@@ -50,9 +49,13 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
      * List of positions listeners
      */
     private ArrayList<IPositionsListener> listeners;
-	
-	public CurrentUserView(User u) {
-		super(u);
+
+    /**
+     * Instantiate a user view with field of listen
+     * @param user The user model
+     */
+	public CurrentUserView(User user) {
+		super(user);
 
         listeners = new ArrayList<>();
 		

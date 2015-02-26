@@ -1,18 +1,17 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
+/**
+ * The view for sended messages
+ *
+ * @author Thomas TRIBOULT on 23/02/2015.
+ */
 public class MessagesView extends JPanel
 {
 	private static final long serialVersionUID = -4096704961549943667L;
@@ -24,9 +23,13 @@ public class MessagesView extends JPanel
 	 */
 	private JTextArea messagesArea;
 
+    /**
+     * Instantiate the view
+     */
 	public MessagesView()
 	{
 		super();
+
 		messagesArea = new JTextArea();
 		messagesArea.setEditable(false);
 		DefaultCaret caret = (DefaultCaret) messagesArea.getCaret();

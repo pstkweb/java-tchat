@@ -90,8 +90,6 @@ public class DefaultClient implements IClient
 			System.out.println("Input/Output error : " + e.getMessage());
 		}
 	}
-	
-
 
 	@Override
 	public Tchat getTchat()
@@ -199,8 +197,6 @@ public class DefaultClient implements IClient
 	{
 		sendMessage(message, Server.ROOM_PUBLIC_KEY);
 	}
-	
-
 
 	@Override
 	public void newRoom(ArrayList<String> userNames)
@@ -225,6 +221,11 @@ public class DefaultClient implements IClient
 		System.out.println("End token: "+token);
 	}
 
+    /**
+     * Sends a posistion through the socket writer
+     * @param position The position of the user
+     * @param roomID The room's id of the current room
+     */
     public void sendPosition(Position position, String roomID)
     {
         send(Protocol.SEND_POS);
@@ -352,6 +353,10 @@ public class DefaultClient implements IClient
 		return false;
 	}
 
+    /**
+     * Receives the positions list
+     * @return boolean whether the list have been well received
+     */
     private boolean receivePositionList()
     {
         try {
@@ -399,7 +404,7 @@ public class DefaultClient implements IClient
 			System.out.println("Position: "+position.toString());
 
             // Update the user position
-            tchat.addPosition(roomID, from, position);
+            tchat.setUserPosition(roomID, from, position);
 
 			return true;
 		} catch (IOException e) {

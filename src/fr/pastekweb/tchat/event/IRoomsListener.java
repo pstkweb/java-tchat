@@ -1,5 +1,10 @@
 package fr.pastekweb.tchat.event;
 
+/**
+ * A listener for the rooms
+ *
+ * @author Antoine LELAISANT <antoine.lelaisant@gmail.com>
+ */
 public interface IRoomsListener
 {
 	/**

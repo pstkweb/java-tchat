@@ -15,6 +15,9 @@ import fr.pastekweb.tchat.event.IRoomsObservable;
 import fr.pastekweb.tchat.model.Room;
 import fr.pastekweb.tchat.server.Server;
 
+/**
+ * The main part of the view
+ */
 public class TchatView extends JPanel implements IRoomsListener
 {
 	private static final long serialVersionUID = 4461840737144380610L;
@@ -104,6 +107,22 @@ public class TchatView extends JPanel implements IRoomsListener
 		}
 	}
 
+    /**
+     * Gets the tabbedpane
+     * @return The tabbedpane
+     */
+    public JTabbedPane getTabbedPane()
+    {
+        return tabbedPane;
+    }
+
+    private void clearTabbedPane()
+    {
+        tabbedPane.removeAll();
+        tabbedPane.revalidate();
+        tabbedPane.repaint();
+    }
+
 	@Override
 	public void roomsListChanged(IRoomsObservable model)
 	{
@@ -129,21 +148,5 @@ public class TchatView extends JPanel implements IRoomsListener
 			
 			System.out.println("  - "+entry.getKey());
 		}
-	}
-	
-	private void clearTabbedPane()
-	{
-		tabbedPane.removeAll();
-		tabbedPane.revalidate();
-		tabbedPane.repaint();
-	}
-	
-	/**
-	 * Gets the tabbedpane
-	 * @return The tabbedpane
-	 */
-	public JTabbedPane getTabbedPane()
-	{
-		return tabbedPane;
 	}
 }

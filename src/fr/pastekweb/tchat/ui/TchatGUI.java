@@ -25,18 +25,14 @@ public class TchatGUI
 	 * The view to ask the user's name
 	 */
 	private UsernameView usernameView;
-	/**
-	 * The controller
-	 */
-	private TchatController controller;
 
-	/**
+    /**
 	 * Initialize the GUI
 	 */
 	public TchatGUI(IClient client)
 	{
 		view = new JPanel();
-		controller = new TchatController(client, this);
+        TchatController controller = new TchatController(client, this);
 		tchatView = new TchatView(client, controller);
 		client.getTchat().addRoomsListener(tchatView);
 		usernameView = new UsernameView(controller);
@@ -78,7 +74,7 @@ public class TchatGUI
 	
 	/**
 	 * Gets the GUI view
-	 * @return
+	 * @return The GUI
 	 */
 	public JPanel getView()
 	{
