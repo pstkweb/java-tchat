@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import javax.swing.JList;
 
 import fr.pastekweb.tchat.client.IClient;
-import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.server.Server;
 import fr.pastekweb.tchat.ui.RoomView;
 import fr.pastekweb.tchat.ui.TchatGUI;

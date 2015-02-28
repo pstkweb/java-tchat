@@ -1,7 +1,5 @@
 package fr.pastekweb.tchat.model;
 
-import javafx.geometry.Pos;
-
 import java.awt.Point;
 import java.util.Random;
 
