@@ -9,9 +9,6 @@ import java.util.Random;
  * @author Thomas TRIBOULT
  */
 public class Position extends Point {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 818877188439997924L;
 
 	/**
@@ -40,7 +37,11 @@ public class Position extends Point {
 	public String toString() {
 		return x + ":" + y;
 	}
-	
+
+    /**
+     * Generates a random position
+     * @return A position
+     */
 	public static Position getRand(){
 		Random r = new Random();
 		

@@ -9,6 +9,9 @@ import javax.swing.JTextField;
 
 import fr.pastekweb.tchat.controller.TchatController;
 
+/**
+ * A view to ask the user name
+ */
 public class UsernameView extends JPanel
 {
 	private static final long serialVersionUID = -132155128090940934L;
@@ -54,7 +57,7 @@ public class UsernameView extends JPanel
 	
 	/**
 	 * Gets the username field
-	 * @return
+	 * @return The field to fill the username
 	 */
 	public JTextField getUsernameField()
 	{
@@ -63,7 +66,7 @@ public class UsernameView extends JPanel
 	
 	/**
 	 * Gets the submit button
-	 * @return
+	 * @return The button to connect to the tchat
 	 */
 	public JButton getSubmitButton()
 	{
@@ -72,7 +75,7 @@ public class UsernameView extends JPanel
 	
 	/**
 	 * Sets an error message
-	 * @param message
+	 * @param message The message to display
 	 */
 	public void setErrorMessage(String message)
 	{

@@ -5,6 +5,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * The view for sending messages
+ *
  * @author Thomas TRIBOULT on 23/02/2015.
  */
 public class MessageInputView extends JPanel {
@@ -17,6 +19,9 @@ public class MessageInputView extends JPanel {
      */
     private JButton sendButton;
 
+    /**
+     * Instantiate the view
+     */
     public MessageInputView()
     {
         newMessageContent = new JTextField();

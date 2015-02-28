@@ -169,7 +169,7 @@ public class ClientHandler implements Runnable {
 	
 	/**
 	 * Sends the users list of the asked room
-	 * @param roomID
+	 * @param roomID The id of room which the user leave
 	 */
 	private void sendUsersList(String roomID) throws IOException {
 		// TODO Removes logs

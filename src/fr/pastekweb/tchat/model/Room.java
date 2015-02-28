@@ -65,6 +65,16 @@ public class Room extends DefaultObservable
         positions.addPosition(user, position);
     }
 
+    /**
+     * Update the position of the given user
+     * @param user The user for which we update the position
+     * @param position The new position
+     */
+    public void setPosition(User user, Position position)
+    {
+        positions.updatePosition(user, position);
+    }
+
 	/**
 	 * Gets the list of users
 	 * @return The list of users

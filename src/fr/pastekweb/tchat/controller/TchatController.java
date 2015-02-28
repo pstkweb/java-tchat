@@ -65,17 +65,17 @@ public class TchatController implements ActionListener
 	
 	/**
 	 * Opens a new room on the server and the other clients
-	 * @param roomView
+	 * @param roomView The room which the message is sent
 	 */
 	private void openNewRoom(RoomView roomView)
 	{
 		JList<String> userList = roomView.getUserList();
 		int[] selectedItems = userList.getSelectedIndices();
 		ArrayList<String> userNames = new ArrayList<>();
-		
-		for (int i = 0; i < selectedItems.length; i++) {
-			userNames.add(userList.getModel().getElementAt(selectedItems[i]));
-		}
+
+        for (int selectedItem : selectedItems) {
+            userNames.add(userList.getModel().getElementAt(selectedItem));
+        }
 		
 		client.newRoom(userNames);
 	}

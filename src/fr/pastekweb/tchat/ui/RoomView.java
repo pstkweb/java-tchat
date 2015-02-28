@@ -124,12 +124,6 @@ public class RoomView extends JPanel implements IMessageListener
 	{
 		return newMessageView;
 	}
-
-	@Override
-	public void hasNewMessage(String from, String message)
-	{
-		this.messagesView.addMessage(from, message);
-	}
 	
 	/**
 	 * Gets the Room linked to this view
@@ -157,4 +151,10 @@ public class RoomView extends JPanel implements IMessageListener
 	{
 		return userList;
 	}
+
+    @Override
+    public void hasNewMessage(String from, String message)
+    {
+        this.messagesView.addMessage(from, message);
+    }
 }
