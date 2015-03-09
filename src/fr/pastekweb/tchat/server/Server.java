@@ -1,5 +1,7 @@
 package fr.pastekweb.tchat.server;
 
+import fr.pastekweb.tchat.model.Position;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ServerSocket;
@@ -8,8 +10,6 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import fr.pastekweb.tchat.model.Position;
 
 /**
  * Server main class
@@ -29,11 +29,11 @@ public class Server
 	 */
 	private ServerSocket socket;
 	/**
-	 * The HashMap of differents opened rooms
+	 * The HashMap of different opened rooms
 	 */
 	private HashMap<String, HashMap<String, ClientHandler>> rooms;
     /**
-     * The HashMap of differents users positions in rooms
+     * The HashMap of different users positions in rooms
      */
     private HashMap<String, HashMap<String, Position>> roomsPositions;
 	

@@ -1,17 +1,14 @@
 package fr.pastekweb.tchat.controller;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
-import javax.swing.JList;
-
 import fr.pastekweb.tchat.client.IClient;
 import fr.pastekweb.tchat.server.Server;
 import fr.pastekweb.tchat.ui.RoomView;
 import fr.pastekweb.tchat.ui.TchatGUI;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class TchatController implements ActionListener
 {
@@ -76,8 +73,10 @@ public class TchatController implements ActionListener
         for (int selectedItem : selectedItems) {
             userNames.add(userList.getModel().getElementAt(selectedItem));
         }
-		
-		client.newRoom(userNames);
+
+        if (userNames.size() > 0) {
+            client.newRoom(userNames);
+        }
 	}
 	
 	/**

@@ -1,19 +1,16 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.BorderLayout;
-import java.util.HashMap;
-import java.util.Map.Entry;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-
 import fr.pastekweb.tchat.client.IClient;
 import fr.pastekweb.tchat.controller.TchatController;
 import fr.pastekweb.tchat.event.IRoomsListener;
 import fr.pastekweb.tchat.event.IRoomsObservable;
 import fr.pastekweb.tchat.model.Room;
 import fr.pastekweb.tchat.server.Server;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * The main part of the view
@@ -54,7 +51,7 @@ public class TchatView extends JPanel implements IRoomsListener
             roomViews.put(entry.getKey(), roomView);
 
             if (Server.ROOM_PUBLIC_KEY.equals(entry.getKey())) {
-                addTab(room, roomView, "Public", "Public");
+                addTab(roomView, "Public", "Public");
             } else {
                 addTab(room, roomView);
             }
@@ -74,12 +71,11 @@ public class TchatView extends JPanel implements IRoomsListener
 	
 	/**
 	 * Add a tab to the tabbed pane
-	 * @param room The Room
 	 * @param roomView The RoomView
 	 * @param title The tab title
 	 * @param tip The tab tip
 	 */
-	private void addTab(Room room, RoomView roomView, String title, String tip)
+	private void addTab(RoomView roomView, String title, String tip)
 	{
 		ImageIcon icon = new ImageIcon("images/ic_tchat.png");
 		tabbedPane.addTab(title, icon, roomView, tip);
@@ -93,17 +89,16 @@ public class TchatView extends JPanel implements IRoomsListener
 	private void addTab(Room room, RoomView roomView)
 	{
 		String userList = room.getUsersListToString();
-		String title;
-		if (userList.length() > TAB_TITLE_LENGTH) {
+
+		String title = userList;
+        if (userList.length() > TAB_TITLE_LENGTH) {
 			title = userList.substring(0, TAB_TITLE_LENGTH);
-		} else {
-			title = room.getUsersListToString();
 		}
 		
 		if (Server.ROOM_PUBLIC_KEY.equals(room.getId())) {
-			addTab(room, roomView, "Public", "Public");
+			addTab(roomView, "Public", "Public");
 		} else {
-			addTab(room, roomView, title, userList);
+			addTab(roomView, title, userList);
 		}
 	}
 

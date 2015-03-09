@@ -1,10 +1,6 @@
 package fr.pastekweb.tchat.ui;
 
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
 /**

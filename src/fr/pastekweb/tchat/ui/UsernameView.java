@@ -1,13 +1,9 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.Dimension;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 import fr.pastekweb.tchat.controller.TchatController;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A view to ask the user name
