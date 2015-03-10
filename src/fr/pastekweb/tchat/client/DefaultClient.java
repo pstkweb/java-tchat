@@ -1,21 +1,17 @@
 package fr.pastekweb.tchat.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.math.BigInteger;
-import java.net.Socket;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-
 import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.model.Room;
 import fr.pastekweb.tchat.model.Tchat;
 import fr.pastekweb.tchat.model.User;
 import fr.pastekweb.tchat.server.Protocol;
 import fr.pastekweb.tchat.server.Server;
+
+import java.io.*;
+import java.math.BigInteger;
+import java.net.Socket;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 
 /**
  * The default Client class
@@ -26,12 +22,8 @@ public class DefaultClient implements IClient
 {	
 	private static final String DEFAULT_IP = "127.0.0.1";
 	private static final int DEFAULT_PORT = 1337;
-	
-	/**
-	 * The socket connected to the Server
-	 */
-	private Socket socket;
-	/**
+
+    /**
 	 * The socket's writer
 	 */
 	private PrintWriter writer;
@@ -83,7 +75,7 @@ public class DefaultClient implements IClient
 		this.isAlive = true;
 		this.tchat = new Tchat();
 		try {
-			socket = new Socket(ip, port);	
+            Socket socket = new Socket(ip, port);
 			writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
@@ -422,7 +414,7 @@ public class DefaultClient implements IClient
 				String message = reader.readLine();
 				System.out.println("-------------------");
 				System.out.println("Protocol: "+message);
-				switch (Protocol.createProtocol(message)) {
+				switch (Protocol.getProtocol(message)) {
 					case CONNECT_OK:
 						connected = true;
 						synchronized (this) { notify(); }

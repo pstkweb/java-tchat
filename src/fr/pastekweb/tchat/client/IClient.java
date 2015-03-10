@@ -1,9 +1,9 @@
 package fr.pastekweb.tchat.client;
 
-import java.util.ArrayList;
-
 import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.model.Tchat;
+
+import java.util.ArrayList;
 
 /**
  * Interface to represent a Client

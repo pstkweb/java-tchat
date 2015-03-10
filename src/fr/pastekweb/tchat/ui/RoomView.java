@@ -1,17 +1,11 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.*;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import fr.pastekweb.tchat.controller.TchatController;
 import fr.pastekweb.tchat.event.IMessageListener;
 import fr.pastekweb.tchat.model.Room;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The {@link Room} view

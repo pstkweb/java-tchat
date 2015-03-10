@@ -24,15 +24,27 @@ public class PositionsList extends AbstractListModel<Position> {
     }
 
     /**
-     * Add a user's position to the list
+     * Add a user's position to the list and refresh the view
      * @param user The user which is positioned
      * @param position The position
      */
     public void addPosition(User user, Position position)
     {
+        addPosition(user, position, true);
+    }
+
+    /**
+     * Add a user's position to the list
+     * @param user The user which is positioned
+     * @param position The position
+     * @param refreshDisplay Whether to refresh the view or not
+     */
+    public void addPosition(User user, Position position, boolean refreshDisplay) {
         list.put(user, position);
 
-        fireContentsChanged(this, 0, getSize());
+        if (refreshDisplay) {
+            fireContentsChanged(this, 0, getSize());
+        }
     }
 
     /**
@@ -50,6 +62,9 @@ public class PositionsList extends AbstractListModel<Position> {
                 return;
             }
         }
+
+        // Add the position if not already in the list
+        addPosition(user, position);
     }
 
     /**
@@ -58,9 +73,14 @@ public class PositionsList extends AbstractListModel<Position> {
      */
     public void removePosition(User user)
     {
-        list.remove(user);
+        for (Map.Entry<User, Position> elmt : list.entrySet()) {
+            if (elmt.getKey().getPseudo().equals(user.getPseudo())) {
+                list.remove(elmt.getKey());
 
-        fireContentsChanged(this, 0, getSize());
+                fireContentsChanged(this, 0, getSize());
+                return;
+            }
+        }
     }
 
     /**

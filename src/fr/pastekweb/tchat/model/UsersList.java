@@ -1,8 +1,7 @@
 package fr.pastekweb.tchat.model;
 
+import javax.swing.*;
 import java.util.ArrayList;
-
-import javax.swing.AbstractListModel;
 
 /**
  * Represents the users list of a {@link Room}
@@ -42,9 +41,14 @@ public class UsersList extends AbstractListModel<String>
 	 */
 	public void removeUser(User user)
 	{
-		// int index = users.indexOf(username);
-		users.remove(user);
-		fireContentsChanged(this, 0, getSize());
+        for (User u : users) {
+            if (u.getPseudo().equals(user.getPseudo())) {
+                users.remove(u);
+
+                fireContentsChanged(this, 0, getSize());
+                return;
+            }
+        }
 	}
 	
 	/**

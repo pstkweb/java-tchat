@@ -1,7 +1,8 @@
 package fr.pastekweb.tchat.event;
 
-import java.util.HashMap;
 import fr.pastekweb.tchat.model.Room;
+
+import java.util.HashMap;
 
 /**
  * Interface to implements the Observable pattern on rooms' state

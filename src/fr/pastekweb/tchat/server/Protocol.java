@@ -50,7 +50,7 @@ public enum Protocol {
 	 * 
 	 * @return A Protocol
 	 */
-	public static Protocol createProtocol(String str) {
+	public static Protocol getProtocol(String str) {
 		for (Protocol p : Protocol.values()) {
 			if (p.toString().equals(str)) {
 				return p;

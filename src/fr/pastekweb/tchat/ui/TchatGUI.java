@@ -1,10 +1,10 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-
 import fr.pastekweb.tchat.client.IClient;
 import fr.pastekweb.tchat.controller.TchatController;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * 

@@ -1,15 +1,10 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-
-import javax.swing.JPanel;
-
 import fr.pastekweb.tchat.model.User;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Display a user by a colored dot and its name
@@ -39,7 +34,7 @@ public class UserView extends JPanel {
 
     /**
      * Instantiate a user view with its model
-     * @param user
+     * @param user The user model to draw
      */
 	public UserView(User user) {
 		model = user;
@@ -58,7 +53,7 @@ public class UserView extends JPanel {
 		Rectangle2D strBounds = metrics.getStringBounds(model.getPseudo(), g2d);
 		
 		setSize(
-			(int) strBounds.getWidth(), 
+			(int) (strBounds.getWidth() > USER_DOT_SIZE ? strBounds.getWidth() : USER_DOT_SIZE),
 			(int) (USER_DOT_SIZE + NAME_MARGIN_TOP + strBounds.getHeight())
 		);
 

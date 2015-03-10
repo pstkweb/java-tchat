@@ -1,10 +1,10 @@
 package fr.pastekweb.tchat.model;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import fr.pastekweb.tchat.event.DefaultRoomsObservable;
 import fr.pastekweb.tchat.server.Server;
+
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  * The model that represents the Tchat
@@ -14,7 +14,7 @@ import fr.pastekweb.tchat.server.Server;
 public class Tchat extends DefaultRoomsObservable
 {	
 	/**
-	 * The user 's pseudo
+	 * The user's
 	 */
 	private User user;
 	/**
@@ -97,7 +97,7 @@ public class Tchat extends DefaultRoomsObservable
 	 */
 	public void addMessage(String roomID, String from, String message)
 	{
-		rooms.get(roomID).newMessage(from, message);
+		rooms.get(roomID).newMessage(from, user, message);
 	}
 
     /**

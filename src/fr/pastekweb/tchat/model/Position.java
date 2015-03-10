@@ -1,6 +1,6 @@
 package fr.pastekweb.tchat.model;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.Random;
 
 /**
@@ -31,7 +31,6 @@ public class Position extends Point {
 	
 	/**
 	 * A String representation of this coordinate
-	 * 
 	 * @return A String representing the x,y coordinates
 	 */
 	public String toString() {
@@ -47,4 +46,13 @@ public class Position extends Point {
 		
 		return new Position(r.nextInt(50), r.nextInt(50));
 	}
+
+    /**
+     * Compute the distance between two cartesian points
+     * @param point The position to compare to
+     * @return The distance computed by the Pythagorean theorem
+     */
+    public double distance(Position point) {
+        return Math.sqrt(Math.pow((point.getX() - x), 2) + Math.pow(point.getY() - y, 2));
+    }
 }

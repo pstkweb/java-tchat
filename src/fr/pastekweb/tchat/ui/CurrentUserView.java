@@ -1,33 +1,21 @@
 package fr.pastekweb.tchat.ui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
-
-import fr.pastekweb.tchat.event.IPositionsListener;
-import fr.pastekweb.tchat.event.IPositionsObservable;
+import fr.pastekweb.tchat.model.Position;
 import fr.pastekweb.tchat.model.User;
+
+import java.awt.*;
 
 /**
  * Display the current user with it's field of listen
  * 
  * @author Thomas TRIBOULT
  */
-public class CurrentUserView extends UserView implements MouseMotionListener, MouseListener, IPositionsObservable {
+public class CurrentUserView extends UserView {
 	private static final long serialVersionUID = 7834915844961113033L;
 	/**
 	 * The diameter of the field of listen
 	 */
-	private static final int FIELD_OF_LISTEN = 350;
+	public static final int FIELD_OF_LISTEN = 350;
 	/**
 	 * The width of the field of listen stroke
 	 */
@@ -36,19 +24,6 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 	 * The user dot color
 	 */
 	protected static final Color USER_DOT_COLOR = Color.CYAN;
-	
-	/**
-	 * The user view state
-	 */
-	private boolean isDragged;
-	/**
-	 * The Location of the user before dragging
-	 */
-	private Point previousLocation;
-    /**
-     * List of positions listeners
-     */
-    private ArrayList<IPositionsListener> listeners;
 
     /**
      * Instantiate a user view with field of listen
@@ -56,19 +31,23 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
      */
 	public CurrentUserView(User user) {
 		super(user);
-
-        listeners = new ArrayList<>();
 		
 		setSize(
 			FIELD_OF_LISTEN + FIELD_STROKE_WIDTH, 
 			FIELD_OF_LISTEN + FIELD_STROKE_WIDTH
 		);
-		
-		addMouseListener(this);
-		addMouseMotionListener(this);
-		
-		isDragged = false;
 	}
+
+    /**
+     * Get the position of the user
+     * @return It's position in the room
+     */
+    public Position getPosition(){
+        return new Position(
+            (int) (getLocation().getX() + (FIELD_OF_LISTEN / 2)),
+            (int) (getLocation().getY() + (FIELD_OF_LISTEN / 2))
+        );
+    }
 	
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -110,65 +89,4 @@ public class CurrentUserView extends UserView implements MouseMotionListener, Mo
 			FIELD_OF_LISTEN / 2 + USER_DOT_SIZE + NAME_MARGIN_TOP
 		);
 	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		if (isDragged) {
-			int dx = (int) (e.getX() - previousLocation.getX());
-			int dy = (int) (e.getY() - previousLocation.getY());
-			
-			Point pos = getLocation();
-			pos.translate(dx, dy);
-			
-			setLocation(pos);
-		}
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// User dot rectangle
-		Rectangle rect = new Rectangle(
-			(FIELD_OF_LISTEN - USER_DOT_SIZE) / 2,
-			(FIELD_OF_LISTEN - USER_DOT_SIZE) / 2,
-			USER_DOT_SIZE, 
-			USER_DOT_SIZE
-		);
-		
-		if (rect.contains(e.getPoint())) {
-			isDragged = true;
-			previousLocation = e.getPoint();
-		}
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		isDragged = false;
-
-        // Notify all listeners that the current user position has changed
-        for (IPositionsListener listener : listeners) {
-            listener.positionChanged(e.getPoint());
-        }
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-
-	@Override
-	public void mouseExited(MouseEvent e) {}
-
-    @Override
-    public void addPositionListener(IPositionsListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removePositionListener(IPositionsListener listener) {
-        listeners.remove(listener);
-    }
 }

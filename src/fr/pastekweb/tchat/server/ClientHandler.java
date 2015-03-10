@@ -1,17 +1,14 @@
 package fr.pastekweb.tchat.server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import fr.pastekweb.tchat.model.Position;
+
+import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import fr.pastekweb.tchat.model.Position;
 
 /**
  * The client thread used by the server
@@ -19,11 +16,7 @@ import fr.pastekweb.tchat.model.Position;
  * @author Thomas TRIBOULT
  */
 public class ClientHandler implements Runnable {
-	/**
-	 * The socket used by that client
-	 */
-	private Socket socket;
-	/**
+    /**
 	 * A reference to the server main class
 	 */
 	private Server server;
@@ -51,7 +44,6 @@ public class ClientHandler implements Runnable {
 	 */
 	public ClientHandler(Socket s, Server serv) {
 		server = serv;
-		socket = s;
 		username = "";
 		isAlive = true;
 		
@@ -75,7 +67,7 @@ public class ClientHandler implements Runnable {
 
 				System.out.println("-------------------");
 				System.out.println("s: "+s);
-				switch (Protocol.createProtocol(s)) {
+				switch (Protocol.getProtocol(s)) {
 
 					case CONNECT:
 						handleConnectionRequest();
@@ -133,7 +125,6 @@ public class ClientHandler implements Runnable {
 	private void handleNewRoomRequest() throws IOException
 	{
 		// TODO Remove logs
-		
 		String roomID = server.openNewRoom();
 		String token = in.readLine();
 		String pseudo;
@@ -240,11 +231,12 @@ public class ClientHandler implements Runnable {
 	 */
 	private void sendMessage() throws IOException
 	{
+        // TODO Removes logs
 		String roomID = in.readLine();
 		String mess = in.readLine();
 		
 		System.out.println("Room id: "+roomID);
-		System.out.println("Message: "+mess);
+		System.out.println("Message: " + mess);
 
         for (Entry<String, ClientHandler> stringClientHandlerEntry : server.getClients().entrySet()) {
             ClientHandler client = stringClientHandlerEntry.getValue();
@@ -257,35 +249,41 @@ public class ClientHandler implements Runnable {
 	}
 	
 	/**
-	 * Sends the list of the users position for a room
+	 * Sends the list of users position for a room
 	 */
 	private void sendPositionsList() throws IOException
 	{
-		// TODO Removes logs
         // Gets the room 's id of the requested list
         String roomID = in.readLine();
+
+        sendPositionsList(roomID);
+	}
+
+    private void sendPositionsList(String roomID) throws IOException
+    {
+        // TODO Removes logs
         String tokenPos = new BigInteger(130, new SecureRandom()).toString(32);
 
         send(Protocol.POSITIONS_LIST);
         send(roomID);
-		send(tokenPos);
+        send(tokenPos);
 
-        System.out.println("Room id: "+roomID);
+        System.out.println("Room id: " + roomID);
         System.out.println("Token: " + tokenPos);
 
         for (Entry<String, Position> client : server.getPositions(roomID).entrySet()) {
             send(client.getKey());
             System.out.println("User: " + client.getKey());
             send(client.getValue().toString());
-            System.out.println("Position: "+client.getValue());
+            System.out.println("Position: " + client.getValue());
         }
-		
-		send(tokenPos);
+
+        send(tokenPos);
         System.out.println("End Token: " + tokenPos);
-	}
+    }
 	
 	/**
-	 * Sends the user position
+	 * Sends the user position to all users in the room
 	 * @throws IOException Whether an input/output error occurs
 	 */
 	private void sendUserPosition() throws IOException
@@ -330,7 +328,8 @@ public class ClientHandler implements Runnable {
 	 * @param pos The position of the new user
 	 */
 	public void sendPosition(String user, Position pos, String roomID) throws IOException {
-		send(Protocol.RECEIVE_POS);
+        System.out.println("Envoi la position");
+        send(Protocol.RECEIVE_POS);
 		send(roomID);
 		send(user);
 		send(pos.toString());
@@ -343,7 +342,10 @@ public class ClientHandler implements Runnable {
 	public void sendNewRoomOpened(String roomID) throws IOException {
 		send(Protocol.NEW_ROOM);
 		send(roomID);
+
 		sendUsersList(roomID);
+
+        sendPositionsList(roomID);
 	}
 	
 	/**
@@ -353,14 +355,6 @@ public class ClientHandler implements Runnable {
 	private void send(Object msg) throws IOException {
         out.println(msg);
         out.flush();
-	}
-	
-	/**
-	 * Get the socket of this client
-	 * @return The socket of the client
-	 */
-	public Socket getSocket() {
-		return socket;
 	}
 	
 	/**

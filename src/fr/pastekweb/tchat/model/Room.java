@@ -1,9 +1,10 @@
 package fr.pastekweb.tchat.model;
 
+import fr.pastekweb.tchat.event.DefaultObservable;
+import fr.pastekweb.tchat.ui.CurrentUserView;
 
 import java.util.ArrayList;
-
-import fr.pastekweb.tchat.event.DefaultObservable;
+import java.util.Map;
 
 /**
  * Class to represent a Tchat Room
@@ -51,7 +52,7 @@ public class Room extends DefaultObservable
 	 */
 	public void removeUser(User user)
 	{
-		users.removeUser(user);
+        users.removeUser(user);
         positions.removePosition(user);
 	}
 
@@ -100,10 +101,12 @@ public class Room extends DefaultObservable
 	public String getUsersListToString()
 	{
 		ArrayList<User> usersList = users.getList();
+
 		String ret = "";
 		for (User user : usersList) {
 			ret += user.getPseudo()+", ";
 		}
+
 		return ret;
 	}
 	
@@ -112,10 +115,35 @@ public class Room extends DefaultObservable
 	 * @param from The user who sends the message
 	 * @param message The message
 	 */
-	public void newMessage(String from, String message)
+	public void newMessage(String from, User to, String message)
 	{
-		notifyHasNewMessage(from, message);
-	}
+        Position senderPosition = null;
+        Position currentUserPosition = null;
+        for (Map.Entry<User, Position> element : positions.getHashMap().entrySet()) {
+            if (element.getKey().getPseudo().equals(from)) {
+                senderPosition = element.getValue();
+
+                if (currentUserPosition != null) {
+                    break;
+                }
+            }
+
+            if (element.getKey().getPseudo().equals(to.getPseudo())) {
+                currentUserPosition = element.getValue();
+
+                if (senderPosition != null) {
+                    break;
+                }
+            }
+        }
+
+        // Print the message only if listenable
+        if (senderPosition != null) {
+            if (senderPosition.distance(currentUserPosition) <= CurrentUserView.FIELD_OF_LISTEN / 2) {
+                notifyHasNewMessage(from, message);
+            }
+        }
+    }
 	
 	/**
 	 * Gets the room's id

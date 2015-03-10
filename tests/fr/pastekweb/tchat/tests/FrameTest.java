@@ -1,13 +1,11 @@
 package fr.pastekweb.tchat.tests;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
-import javax.swing.*;
-
 import fr.pastekweb.tchat.client.DefaultClient;
 import fr.pastekweb.tchat.client.IClient;
 import fr.pastekweb.tchat.ui.TchatGUI;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class FrameTest
 {
