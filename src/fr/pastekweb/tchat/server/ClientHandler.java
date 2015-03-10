@@ -344,7 +344,6 @@ public class ClientHandler implements Runnable {
 		send(roomID);
 
 		sendUsersList(roomID);
-
         sendPositionsList(roomID);
 	}
 	

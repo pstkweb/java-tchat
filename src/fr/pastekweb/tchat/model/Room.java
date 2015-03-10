@@ -101,13 +101,16 @@ public class Room extends DefaultObservable
 	public String getUsersListToString()
 	{
 		ArrayList<User> usersList = users.getList();
-
-		String ret = "";
-		for (User user : usersList) {
-			ret += user.getPseudo()+", ";
+		
+		if (usersList.size() != 0) {
+			String ret = "";
+			for (User user : usersList) {
+				ret += user.getPseudo()+", ";
+			}
+			return ret;
+		} else {
+			return getId();
 		}
-
-		return ret;
 	}
 	
 	/**

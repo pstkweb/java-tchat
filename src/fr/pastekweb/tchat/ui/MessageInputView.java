@@ -11,6 +11,10 @@ import java.awt.*;
  */
 public class MessageInputView extends JPanel {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5717673186826840422L;
+	/**
      * The new message content
      */
     private JTextField newMessageContent;

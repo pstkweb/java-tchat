@@ -75,7 +75,8 @@ public class DefaultClient implements IClient
 		this.isAlive = true;
 		this.tchat = new Tchat();
 		try {
-            Socket socket = new Socket(ip, port);
+            @SuppressWarnings("resource")
+			Socket socket = new Socket(ip, port);
 			writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch (IOException e) {
@@ -115,6 +116,7 @@ public class DefaultClient implements IClient
 	@Override
 	public void askClientsList(String roomID)
 	{
+		System.out.println("Ask client list");
 		send(Protocol.USERS_LIST);
 		send(roomID);
 		
@@ -266,6 +268,7 @@ public class DefaultClient implements IClient
 	 */
 	private boolean receiveClientList()
 	{
+		System.out.println("Receive client list");
 		try {
 			String roomID = reader.readLine();
 			String token = reader.readLine();
@@ -279,7 +282,7 @@ public class DefaultClient implements IClient
 				System.out.println("User: "+pseudo);
 			}
 			System.out.println("End token: "+pseudo);
-			
+			tchat.notifyRoomsListHasChanged();
 			return true;
 		} catch (IOException e) {
 			System.out.println("Stream reading error: "+e.getMessage());

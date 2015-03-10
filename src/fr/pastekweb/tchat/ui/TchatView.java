@@ -89,16 +89,17 @@ public class TchatView extends JPanel implements IRoomsListener
 	private void addTab(Room room, RoomView roomView)
 	{
 		String userList = room.getUsersListToString();
-
-		String title = userList;
-        if (userList.length() > TAB_TITLE_LENGTH) {
-			title = userList.substring(0, TAB_TITLE_LENGTH);
-		}
-		
-		if (Server.ROOM_PUBLIC_KEY.equals(room.getId())) {
-			addTab(roomView, "Public", "Public");
-		} else {
-			addTab(roomView, title, userList);
+		if (userList.length() != 0) {
+			String title = userList;
+	        if (userList.length() > TAB_TITLE_LENGTH) {
+				title = userList.substring(0, TAB_TITLE_LENGTH);
+			}
+			
+			if (Server.ROOM_PUBLIC_KEY.equals(room.getId())) {
+				addTab(roomView, "Public", "Public");
+			} else {
+				addTab(roomView, title, userList);
+			}
 		}
 	}
 

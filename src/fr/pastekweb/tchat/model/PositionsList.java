@@ -11,6 +11,10 @@ import java.util.Map;
  */
 public class PositionsList extends AbstractListModel<Position> {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8422430724651337866L;
+	/**
      * The list of user's positions
      */
     private HashMap<User, Position> list;
