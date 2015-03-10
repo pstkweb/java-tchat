@@ -233,7 +233,7 @@ public class Server
     }
 	
 	/**
-	 * Notifies all user in a room that this room have been opened
+	 * Notifies all user in a room that this room has been opened
 	 * @param roomID The room's Id
 	 */
 	public void notifyRoomOpened(String roomID)

@@ -249,18 +249,24 @@ public class ClientHandler implements Runnable {
 	}
 	
 	/**
-	 * Sends the list of the users position for a room
+	 * Sends the list of users position for a room
 	 */
 	private void sendPositionsList() throws IOException
 	{
-		// TODO Removes logs
         // Gets the room 's id of the requested list
         String roomID = in.readLine();
+
+        sendPositionsList(roomID);
+	}
+
+    private void sendPositionsList(String roomID) throws IOException
+    {
+        // TODO Removes logs
         String tokenPos = new BigInteger(130, new SecureRandom()).toString(32);
 
         send(Protocol.POSITIONS_LIST);
         send(roomID);
-		send(tokenPos);
+        send(tokenPos);
 
         System.out.println("Room id: " + roomID);
         System.out.println("Token: " + tokenPos);
@@ -271,13 +277,13 @@ public class ClientHandler implements Runnable {
             send(client.getValue().toString());
             System.out.println("Position: " + client.getValue());
         }
-		
-		send(tokenPos);
+
+        send(tokenPos);
         System.out.println("End Token: " + tokenPos);
-	}
+    }
 	
 	/**
-	 * Sends the user position
+	 * Sends the user position to all users in the room
 	 * @throws IOException Whether an input/output error occurs
 	 */
 	private void sendUserPosition() throws IOException
@@ -322,7 +328,8 @@ public class ClientHandler implements Runnable {
 	 * @param pos The position of the new user
 	 */
 	public void sendPosition(String user, Position pos, String roomID) throws IOException {
-		send(Protocol.RECEIVE_POS);
+        System.out.println("Envoi la position");
+        send(Protocol.RECEIVE_POS);
 		send(roomID);
 		send(user);
 		send(pos.toString());
@@ -335,7 +342,10 @@ public class ClientHandler implements Runnable {
 	public void sendNewRoomOpened(String roomID) throws IOException {
 		send(Protocol.NEW_ROOM);
 		send(roomID);
+
 		sendUsersList(roomID);
+
+        sendPositionsList(roomID);
 	}
 	
 	/**
